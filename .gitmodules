@@ -1,3 +1,6 @@
 [submodule "lib/xen"]
 	path = lib/xen
 	url = git@github.com:xen-project/xen.git
+[submodule "lib/kernel-shark-v2.beta"]
+	path = lib/kernel-shark-v2.beta
+	url = git@github.com:yordan-karadzhov/kernel-shark-v2.beta.git
