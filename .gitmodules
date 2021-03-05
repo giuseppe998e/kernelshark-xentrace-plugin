@@ -1,0 +1,3 @@
+[submodule "lib/xen"]
+	path = lib/xen
+	url = git@github.com:xen-project/xen.git
