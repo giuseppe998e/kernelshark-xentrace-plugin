@@ -104,14 +104,15 @@ static void init_methods(struct kshark_generic_stream_interface *interface)
  */
 bool KSHARK_INPUT_CHECK(const char *file, char **format)
 {
-    uint32_t event_id = 0;
-
     FILE *fp = fopen(file, "rb");
-    fread(&event_id, sizeof(uint32_t), 1, fp);
+    if (!fp)
+        return false;
+
+    uint32_t event_id;
+    int fret = fread(&event_id, sizeof(event_id), 1, fp) == 1;
     fclose(fp);
 
-    event_id &= 0x0fffffff;
-    return TRC_TRACE_CPU_CHANGE == event_id;
+    return fret && ((event_id & 0x0fffffff) == TRC_TRACE_CPU_CHANGE);
 }
 
 /**
