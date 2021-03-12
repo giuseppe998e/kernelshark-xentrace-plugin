@@ -61,8 +61,13 @@ static char *get_task(struct kshark_data_stream *stream,
 static char *get_event_name(struct kshark_data_stream *stream,
                     const struct kshark_entry *entry)
 {
-    NOTIMPL // TODO
-    return NULL;
+    char *event_str;
+    int pret = asprintf(&event_str, "%s/0x%08x", format_name, entry->event_id);
+
+    if (pret <= 0)
+        return NULL;
+
+    return event_str;
 }
 
 /**
