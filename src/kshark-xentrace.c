@@ -42,8 +42,7 @@ static const char *format_name = "xentrace_binary";
 static const int get_pid(struct kshark_data_stream *stream,
                     const struct kshark_entry *entry)
 {
-    NOTIMPL // TODO
-    return 0;
+    return entry->pid;
 }
 
 /**
