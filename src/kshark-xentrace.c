@@ -34,6 +34,8 @@
 
 #define NOTIMPL fprintf(stderr, "[XenTrace Plugin] Function \"%s(..)\" NOT yet implemented!\n", __func__);
 
+static xen_trace xtrace;
+
 static const char *format_name = "xentrace_binary";
 
 /**
@@ -87,8 +89,35 @@ static ssize_t load_entries(struct kshark_data_stream *stream,
                     struct kshark_context *kshark_ctx,
                     struct kshark_entry ***data_rows)
 {
-    NOTIMPL // TODO
-    return 0;
+    ssize_t events_count = (ssize_t)xen_events_count(xtrace);
+    struct kshark_entry **rows = calloc(events_count, sizeof(struct kshark_entry*));
+
+    int i = 0;
+    int16_t current_cpu = 0;
+
+    xen_event *event;
+    while ( (event = xen_next_event(xtrace)) ) {
+        if (event->id == TRC_TRACE_CPU_CHANGE)
+            current_cpu = event->extra[0];
+
+        rows[i] = malloc(sizeof(struct kshark_entry));
+
+		rows[i]->visible = event->in_cycles ? 0xff : 0x00; // Filter events with no cycles/timestamp
+		rows[i]->stream_id = stream->stream_id;
+        rows[i]->offset = 0;
+
+		rows[i]->event_id = event->id;
+		rows[i]->cpu = current_cpu;
+		rows[i]->pid = 0; // TODO ??
+		rows[i]->ts  = event->in_cycles ? (int64_t)event->cycles : 0;
+
+        ++i;
+    }
+
+    xen_free_trace(xtrace);
+
+    *data_rows = rows;
+    return events_count;
 }
 
 /**
@@ -133,12 +162,26 @@ const char *KSHARK_INPUT_FORMAT()
  */
 int KSHARK_INPUT_INITIALIZER(struct kshark_data_stream *stream)
 {
-    stream->interface = calloc(1, sizeof(struct kshark_generic_stream_interface));
-    if (!stream->interface)
+	struct kshark_generic_stream_interface *interface;
+
+    stream->interface = interface = calloc(1, sizeof(struct kshark_generic_stream_interface));
+    if (!interface)
         return -ENOMEM;
 
-    stream->interface->type = KS_GENERIC_DATA_INTERFACE;
-    init_methods(stream->interface);
+    interface->type = KS_GENERIC_DATA_INTERFACE;
+
+    xtrace = xen_load_trace(stream->file);
+    if (!xtrace) {
+        free(interface);
+        return -ENOMEM;
+    }
+
+    xen_load_events(xtrace);
+	stream->n_cpus   = xen_cpus_count(xtrace);
+	stream->n_events = xen_events_count(xtrace);
+	stream->idle_pid = 0; // TODO ??
+
+    init_methods(interface);
 
     return 0;
 }
