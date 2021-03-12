@@ -115,14 +115,14 @@ static ssize_t load_entries(struct kshark_data_stream *stream,
 
         rows[i] = malloc(sizeof(struct kshark_entry));
 
-		rows[i]->visible = 0xff;
-		rows[i]->stream_id = stream->stream_id;
+        rows[i]->visible = 0xff;
+        rows[i]->stream_id = stream->stream_id;
         rows[i]->offset = 0;
 
-		rows[i]->event_id = event->id;
-		rows[i]->cpu = current_cpu;
-		rows[i]->pid = 0; // TODO ??
-		rows[i]->ts  = (int64_t)event->cycles;
+        rows[i]->event_id = event->id;
+        rows[i]->cpu = current_cpu;
+        rows[i]->pid = 0; // TODO ??
+        rows[i]->ts  = (int64_t)event->cycles;
 
         ++i;
     }
@@ -139,8 +139,8 @@ static ssize_t load_entries(struct kshark_data_stream *stream,
 static void init_methods(struct kshark_generic_stream_interface *interface)
 {
     interface->get_pid = get_pid;
-	interface->get_task = get_task;
-	interface->get_event_name = get_event_name;
+    interface->get_task = get_task;
+    interface->get_event_name = get_event_name;
 
     interface->dump_entry   = dump_entry;
     interface->load_entries = load_entries;
@@ -175,7 +175,7 @@ const char *KSHARK_INPUT_FORMAT()
  */
 int KSHARK_INPUT_INITIALIZER(struct kshark_data_stream *stream)
 {
-	struct kshark_generic_stream_interface *interface;
+    struct kshark_generic_stream_interface *interface;
 
     stream->interface = interface = calloc(1, sizeof(struct kshark_generic_stream_interface));
     if (!interface)
@@ -190,9 +190,9 @@ int KSHARK_INPUT_INITIALIZER(struct kshark_data_stream *stream)
     }
 
     xen_load_events(xtrace);
-	stream->n_cpus   = xen_cpus_count(xtrace);
-	stream->n_events = xen_events_count(xtrace);
-	stream->idle_pid = 0; // TODO ??
+    stream->n_cpus   = xen_cpus_count(xtrace);
+    stream->n_events = xen_events_count(xtrace);
+    stream->idle_pid = 0; // TODO ??
 
     init_methods(interface);
 
