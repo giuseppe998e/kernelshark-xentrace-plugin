@@ -53,8 +53,13 @@ static const int get_pid(struct kshark_data_stream *stream,
 static char *get_task(struct kshark_data_stream *stream,
                     const struct kshark_entry *entry)
 {
-    NOTIMPL // TODO
-    return NULL;
+    char *task_str;
+    int pret = asprintf(&task_str, "NOTIMP");
+
+    if (pret <= 0)
+        return NULL;
+
+    return task_str;
 }
 
 /**
