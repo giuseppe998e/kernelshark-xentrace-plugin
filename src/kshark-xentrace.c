@@ -94,27 +94,35 @@ static ssize_t load_entries(struct kshark_data_stream *stream,
                     struct kshark_context *kshark_ctx,
                     struct kshark_entry ***data_rows)
 {
-    ssize_t events_count = (ssize_t)xen_events_count(xtrace);
-    struct kshark_entry **rows = calloc(events_count, sizeof(struct kshark_entry*));
-
-    int i = 0;
     int16_t current_cpu = 0;
+    ssize_t events_count = 0, // Event with no timestamp
+            i = 0;
 
     xen_event *event;
+    while ( (event = xen_next_event(xtrace)) ) {
+        events_count += event->in_cycles;
+    }
+
+    struct kshark_entry **rows = calloc(events_count, sizeof(struct kshark_entry*));
+
+    xen_reset_iter(xtrace);
     while ( (event = xen_next_event(xtrace)) ) {
         if (event->id == TRC_TRACE_CPU_CHANGE)
             current_cpu = event->extra[0];
 
+        if (!event->in_cycles)
+            continue;
+
         rows[i] = malloc(sizeof(struct kshark_entry));
 
-		rows[i]->visible = event->in_cycles ? 0xff : 0x00; // Filter events with no cycles/timestamp
+		rows[i]->visible = 0xff;
 		rows[i]->stream_id = stream->stream_id;
         rows[i]->offset = 0;
 
 		rows[i]->event_id = event->id;
 		rows[i]->cpu = current_cpu;
 		rows[i]->pid = 0; // TODO ??
-		rows[i]->ts  = event->in_cycles ? (int64_t)event->cycles : 0;
+		rows[i]->ts  = (int64_t)event->cycles;
 
         ++i;
     }
