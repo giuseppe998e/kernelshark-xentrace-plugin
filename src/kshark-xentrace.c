@@ -17,6 +17,11 @@
  * this library. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#ifndef _GNU_SOURCE
+/** Use GNU C Library. */
+#define _GNU_SOURCE
+#endif // _GNU_SOURCE
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -26,8 +31,7 @@
 #include "libkshark-plugin.h"
 #include "xentrace-parser.h"
 
-#define _GNU_SOURCE
-#define NOTIMPL      fprintf(stderr, "[XenTrace Plugin] Function \"%s(..)\" NOT yet implemented!\n", __func__);
+#define NOTIMPL fprintf(stderr, "[XenTrace Plugin] Function \"%s(..)\" NOT yet implemented!\n", __func__);
 
 static const char *format_name = "xentrace_binary";
 
