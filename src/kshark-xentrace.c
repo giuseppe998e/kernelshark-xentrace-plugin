@@ -34,9 +34,9 @@
 
 #define NOTIMPL fprintf(stderr, "[XenTrace Plugin] Function \"%s(..)\" NOT yet implemented!\n", __func__);
 
-static xen_trace xtrace;
-
 static const char *format_name = "xentrace_binary";
+
+static xen_trace xtrace;
 
 /**
  * TODO ...
@@ -159,7 +159,7 @@ bool KSHARK_INPUT_CHECK(const char *file, char **format)
     int fret = fread(&event_id, sizeof(event_id), 1, fp) == 1;
     fclose(fp);
 
-    return fret && ((event_id & 0x0fffffff) == TRC_TRACE_CPU_CHANGE);
+    return fret && (TRC_TRACE_CPU_CHANGE == (event_id & 0x0fffffff));
 }
 
 /**
