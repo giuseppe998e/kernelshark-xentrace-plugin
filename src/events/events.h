@@ -20,12 +20,6 @@
 #ifndef __KSXT_EVENTS
 #define __KSXT_EVENTS
 
-#ifndef _GNU_SOURCE
-/** Use GNU C Library. */
-#define _GNU_SOURCE
-#endif // _GNU_SOURCE
-
-#include <stdio.h>
 #include <stdint.h>
 
 #include "trace.h"

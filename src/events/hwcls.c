@@ -17,6 +17,13 @@
  * this library. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#ifndef _GNU_SOURCE
+/** Use GNU C Library. */
+#define _GNU_SOURCE
+#endif // _GNU_SOURCE
+
+#include <stdio.h>
+
 #include "events.h"
 
 static int hw_pm_evname(const uint32_t event_sub, char ***event_name)

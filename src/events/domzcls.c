@@ -17,6 +17,13 @@
  * this library. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#ifndef _GNU_SOURCE
+/** Use GNU C Library. */
+#define _GNU_SOURCE
+#endif // _GNU_SOURCE
+
+#include <stdio.h>
+
 #include "events.h"
 
 int get_dom0cls_evname(const uint32_t event_id, char ***event_name)
