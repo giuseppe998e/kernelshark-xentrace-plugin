@@ -68,13 +68,11 @@ static int hvm_entryexit_evname(const uint32_t event_sub, char ***event_name)
         case 0x001:
             return asprintf(*event_name, "VMENTRY");
         case 0x002:
-            return asprintf(*event_name, "VMEXIT");
         case 0x102:
             return asprintf(*event_name, "VMEXIT");
         case 0x401:
             return asprintf(*event_name, "nVMENTRY");
         case 0x402:
-            return asprintf(*event_name, "nVMEXIT");
         case 0x502:
             return asprintf(*event_name, "nVMEXIT");
         default:
@@ -88,7 +86,6 @@ static int hvm_handler_evname(const uint32_t event_sub, char ***event_name)
         case 0x101:
             return asprintf(*event_name, "PF_XEN");
         case 0x002:
-            return asprintf(*event_name, "PF_INJECT");
         case 0x102:
             return asprintf(*event_name, "PF_INJECT");
         case 0x003:
@@ -102,11 +99,9 @@ static int hvm_handler_evname(const uint32_t event_sub, char ***event_name)
         case 0x007:
             return asprintf(*event_name, "IO_WRITE");
         case 0x008:
-            return asprintf(*event_name, "CR_READ");
         case 0x108:
             return asprintf(*event_name, "CR_READ");
         case 0x009:
-            return asprintf(*event_name, "CR_WRITE");
         case 0x109:
             return asprintf(*event_name, "CR_WRITE");
         case 0x00A:
@@ -130,7 +125,6 @@ static int hvm_handler_evname(const uint32_t event_sub, char ***event_name)
         case 0x013:
             return asprintf(*event_name, "HLT");
         case 0x014:
-            return asprintf(*event_name, "INVLPG");
         case 0x114:
             return asprintf(*event_name, "INVLPG");
         case 0x015:
@@ -146,7 +140,6 @@ static int hvm_handler_evname(const uint32_t event_sub, char ***event_name)
         case 0x018:
             return asprintf(*event_name, "CLTS");
         case 0x019:
-            return asprintf(*event_name, "LMSW");
         case 0x119:
             return asprintf(*event_name, "LMSW");
         case 0x01a:
