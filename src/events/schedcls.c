@@ -22,8 +22,6 @@
 static int sched_min_evname(const uint32_t event_sub, char ***event_name)
 {
     switch (event_sub) {
-        case TRC_SCHED_CONTINUE_RUNNING:
-            return asprintf(*event_name, "continue_running");
         case 0x011:
             return asprintf(*event_name, "running_to_runnable");
         case 0x021:
@@ -195,6 +193,9 @@ static int sched_class_evname(const uint32_t event_sub, char ***event_name)
 
 int get_schedcls_evname(const uint32_t event_id, char ***event_name)
 {
+    if (event_id == TRC_SCHED_CONTINUE_RUNNING)
+        return asprintf(*event_name, "continue_running");
+
     int event_sub = event_id & 0x00000fff;
     switch (GET_EVENT_SUBCLS(event_id)) {
         case GET_EVENT_SUBCLS(TRC_SCHED_MIN):
