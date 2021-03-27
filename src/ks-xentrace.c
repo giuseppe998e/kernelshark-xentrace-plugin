@@ -95,10 +95,16 @@ static char *get_task(struct kshark_data_stream *stream,
     return task_str;
 }
 
+/**
+ * 
+ */
 static char *get_event_name(struct kshark_data_stream *stream,
                             const struct kshark_entry *entry)
 {
     xt_event *event = xtp_get_event(I.parser, entry->offset);
+    if (!event)
+        return NULL;
+
     uint32_t event_id = (event->rec).id;
     char **event_name;
     int success;
