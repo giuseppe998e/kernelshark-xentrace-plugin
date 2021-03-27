@@ -65,7 +65,10 @@ static struct {
 static const int get_pid(struct kshark_data_stream *stream,
                             const struct kshark_entry *entry)
 {
-    return (entry->visible & KS_PLUGIN_UNTOUCHED_MASK) ? entry->pid : KS_EMPTY_BIN;
+    if (entry->visible & KS_PLUGIN_UNTOUCHED_MASK)
+        return entry->pid;
+
+    return KS_EMPTY_BIN;
 }
 
 /**
