@@ -35,7 +35,7 @@
 // XenTrace-Parser
 #include "xentrace-event.h"
 #include "xentrace-parser.h"
-// Events formatter
+// Events formatting
 #include "events/events.h"
 
 #define ENV_XEN_CPUHZ "XEN_CPUHZ"
@@ -50,7 +50,6 @@ static const char *format_name = "xentrace_binary";
 static struct {
     // XenTrace Parser instance.
     xentrace_parser parser;
-
     // CPU Hz and Qhz values to use
     // with the currently open trace.
     uint64_t cpu_hz,
@@ -823,8 +822,8 @@ static char *get_info(struct kshark_data_stream *stream,
 static char *dump_entry(struct kshark_data_stream *stream,
                             const struct kshark_entry *entry)
 {
-    char *ev_task  = get_task(stream, entry),
-        *ev_name = get_event_name(stream, entry),
+    char *ev_task = get_task(stream, entry),
+        *ev_name  = get_event_name(stream, entry),
         *ev_info  = get_info(stream, entry),
         *ev_dump;
 
@@ -848,7 +847,7 @@ static char *dump_entry(struct kshark_data_stream *stream,
 static int64_t tsc_to_ns(uint64_t tsc)
 {
     // TODO Check absolute time conversion
-    return ((tsc - I.first_tsc) << 10) / I.cpu_qhz;
+    return ((tsc - I.first_tsc)) / I.cpu_qhz;
 }
 
 /**
@@ -859,7 +858,7 @@ static ssize_t load_entries(struct kshark_data_stream *stream,
                                 struct kshark_entry ***data_rows)
 {
     int n_events = xtp_events_count(I.parser),
-            pos = 0;
+             pos = 0;
     struct kshark_entry **rows = calloc(n_events, sizeof(struct kshark_entry*));
 
     xt_event *event;
