@@ -1431,12 +1431,16 @@ static char *get_info(struct kshark_data_stream *stream,
 static char *dump_entry(struct kshark_data_stream *stream,
                             const struct kshark_entry *entry)
 {
-    char *ev_name = get_event_name(stream, entry),
+    char *ev_task  = get_task(stream, entry),
+        *ev_name = get_event_name(stream, entry),
         *ev_info  = get_info(stream, entry),
         *ev_dump;
 
-    int ret = asprintf(&ev_dump, "%s [ %s ]", ev_name, ev_info);
+    double ts = (double)entry->ts / 1e9;
+    int ret = asprintf(&ev_dump, "%.6f - %s - %s [ %s ]", 
+                                ts, ev_task, ev_name, ev_info);
 
+    free(ev_task);
     free(ev_name);
     free(ev_info);
 
