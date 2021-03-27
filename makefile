@@ -30,7 +30,7 @@ $(OBJDIR)/%.o: $(SRCDIR)/%.c
 #---
 .PHONY: make-xtp
 make-xtp:
-	@$(MAKE) -C $(LIBDIR)/xentrace-parser
+	@$(MAKE) -C $(LIBDIR)/xentrace-parser CFLAGS=$(CFLAGS)
 
 #---
 .PHONY: clean
