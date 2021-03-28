@@ -250,7 +250,9 @@ static char *dump_entry(struct kshark_data_stream *stream,
 static int64_t tsc_to_ns(uint64_t tsc)
 {
     // TODO Check absolute time conversion
-    return ((tsc - I.first_tsc) << 10) / I.cpu_qhz;
+    if (I.first_tsc) // if "XEN_ABSTS" is NOT set
+        tsc = (tsc - I.first_tsc) << 10;
+    return tsc / I.cpu_qhz;
 }
 
 /**
