@@ -264,11 +264,11 @@ static ssize_t load_entries(struct kshark_data_stream *stream,
 {
     int n_events = xtp_events_count(I.parser),
              pos = 0;
-    struct kshark_entry **rows = calloc(n_events, sizeof(struct kshark_entry*));
+    struct kshark_entry **rows = malloc(sizeof(struct kshark_entry*) * n_events);
 
     xt_event *event;
     while ( (event = xtp_next_event(I.parser)) ) {
-        // Utility vars
+        // Utility ptrs
         xt_header *hdr = &event->hdr;
         xt_record *rec = &event->rec;
 
@@ -280,7 +280,7 @@ static ssize_t load_entries(struct kshark_data_stream *stream,
         rows[pos]->visible = 0xff;
         rows[pos]->offset = pos;
 
-        rows[pos]->event_id = rec->id; // FIXME  int16_t < uint32_t:28  ¯\_(ツ)_/¯
+        rows[pos]->event_id = rec->id % 16; // FIXME  int16_t < uint32_t:28  ¯\_(ツ)_/¯
         rows[pos]->cpu = hdr->cpu;
         rows[pos]->ts  = tsc_to_ns(rec->tsc);
 
