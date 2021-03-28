@@ -1,3 +1,8 @@
+/*************************************************************************************************
+ * FROM: https://github.com/yordan-karadzhov/kernel-shark-v2.beta/blob/kernelshark/src/libkshark.h
+ * COMMIT: ab7507290cbb361dee8854f6f5d37431b6d91ad9
+ */
+
 /* SPDX-License-Identifier: LGPL-2.1 */
 
 /*
