@@ -370,11 +370,11 @@ bool KSHARK_INPUT_CHECK(const char *file, char **format)
         return false;
 
     uint32_t event_id;
-    int fret = fread(&event_id, sizeof(event_id), 1, fp) == 1;
+    int fread_ok = fread(&event_id, sizeof(event_id), 1, fp) == 1;
     fclose(fp);
 
     // TRC_TRACE_CPU_CHANGE should be the first record
-    return fret && ((event_id & 0x0fffffff) == TRC_TRACE_CPU_CHANGE);
+    return fread_ok && ((event_id & 0x0fffffff) == TRC_TRACE_CPU_CHANGE);
 }
 
 /**
