@@ -27,6 +27,9 @@
 #define GET_EVENT_CLS(e)    ((e) >> TRC_CLS_SHIFT)
 #define GET_EVENT_SUBCLS(e) ((e) >> TRC_SUBCLS_SHIFT)
 
+#define MAX_EVNAME_LENGTH 32
+#define MAX_EVINFO_LENGTH 128
+
 // General trace | basecls.c
 int get_basecls_evname(const uint32_t, char*);
 int get_basecls_evinfo(const uint32_t, const uint32_t*, char*);
