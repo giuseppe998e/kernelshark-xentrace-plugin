@@ -49,11 +49,11 @@
 #define MAX_EVNAME_LENGTH 32
 #define MAX_EVINFO_LENGTH 128
 
+#define QHZ_FROM_HZ(_hz) (((_hz) << 10) / 1000000000)
 #define DEFAULT_CPU_HZ 2400000000LL
 #define GHZ 1000000000LL
 #define MHZ 1000000LL
 #define KHZ 1000LL
-#define QHZ_FROM_HZ(_hz) (((_hz) << 10) / 1000000000)
 
 static const char *format_name = "xentrace_binary";
 
