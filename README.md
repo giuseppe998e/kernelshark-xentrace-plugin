@@ -30,6 +30,6 @@ $ kernelshark -p out/ks-xentrace.so trace.xen
 ## License
 This plugin is released under the `GNU Lesser General Public License v3 (or later)`.  
 This plugin uses code from various projects:
-* `libkshark.h` and `libkshark-plugin.h` from [KernelShark-v2.beta](https://git.kernel.org/pub/scm/utils/trace-cmd/kernel-shark.git) released under the `LGPLv2.1`;
-* `trace.h` from [Xen](https://xenbits.xen.org/gitweb/?p=xen.git;a=summary) released under the `MIT License`;
+* `libkshark.h` and `libkshark-plugin.h`, from [KernelShark-v2.beta](https://git.kernel.org/pub/scm/utils/trace-cmd/kernel-shark.git), released under the `LGPLv2.1`;
+* `trace.h`, from [Xen](https://xenbits.xen.org/gitweb/?p=xen.git;a=summary), released under the `MIT License`;
 * [XenTrace-Parser](https://github.com/giuseppe998e/xentrace-parser) released under the `LGPLv3`.
