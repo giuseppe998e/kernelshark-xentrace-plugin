@@ -38,6 +38,11 @@
 // Events formatting
 #include "events/events.h"
 
+#ifdef DEBUG
+#define DBG_PRINTF(_format, ...) (fprintf(stdout, "[XenTrace DEBUG] %s: ", __func__), \
+                                    fprintf(stdout, _format, __VA_ARGS__));
+#endif
+
 #define ENV_XEN_CPUHZ "XEN_CPUHZ"
 #define ENV_XEN_ABSTS "XEN_ABSTS"
 
@@ -152,6 +157,11 @@ static char *get_event_name(struct kshark_data_stream *stream,
             return NULL;
     }
 
+    #ifdef DEBUG
+    if (result_ok > MAX_EVNAME_LENGTH)
+        DBG_PRINTF("result_ok(%d) is greater than the maximum length!\n", result_ok);
+    #endif
+
     return result_str;
 }
 
@@ -203,6 +213,11 @@ static char *get_info(struct kshark_data_stream *stream,
             result_ok = get_hwcls_evinfo(e_record.id, e_record.extra, result_str);
             break;
     }
+
+    #ifdef DEBUG
+    if (result_ok > MAX_EVINFO_LENGTH)
+        DBG_PRINTF("result_ok(%d) is greater than the maximum length!\n", result_ok);
+    #endif
 
     return result_ok > 0 ? result_str : NULL;
 }
