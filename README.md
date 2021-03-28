@@ -22,10 +22,10 @@ $ make
 ## Usage
 ```shell
 $ export XEN_CPUHZ=3,6G # Sets the CPU speed used (in (G)hz / (M)hz / (K)hz / hz )
-$ export XEN_ABSTS=1    # Sets the timestamp as absolute value (WIP) ( 1 / Y / y )
+$ export XEN_ABSTS=1    # Sets the timestamp as absolute value ( 1 / Y / y ) (WIP)
 $ kernelshark -p out/ks-xentrace.so trace.xen
 ```
-**N.B.** When environment variables are not set, the plugin uses predefined variables: `2,4G` and `0` respectively.
+**N.B.** When environment variables are not set, the plugin uses predefined values: `2,4G` and `0` respectively.
 
 ## License
 This plugin is released under the `GNU Lesser General Public License v3 (or later)`.  
