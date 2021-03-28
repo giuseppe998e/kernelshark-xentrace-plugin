@@ -94,15 +94,12 @@ static char *get_task(struct kshark_data_stream *stream,
         return NULL;
 
     xt_header *hdr = &event->hdr;
-    char *task_str;
-    int ret = (hdr->dom == XEN_DOM_IDLE) ?
-                asprintf(&task_str, "idle/v%u", hdr->vcpu) :
-                    asprintf(&task_str, "d%u/v%u", hdr->dom, hdr->vcpu);
+    char *result_str;
+    int result_ok = (hdr->dom == XEN_DOM_IDLE) ?
+                asprintf(&result_str, "idle/v%u", hdr->vcpu) :
+                    asprintf(&result_str, "d%u/v%u", hdr->dom, hdr->vcpu);
 
-    if (ret <= 0)
-        return NULL;
-
-    return task_str;
+    return (result_ok > 0) ? result_str : NULL;
 }
 
 /**
