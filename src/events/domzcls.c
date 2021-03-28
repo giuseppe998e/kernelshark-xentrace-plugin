@@ -26,14 +26,18 @@
 
 #include "events.h"
 
-int get_dom0cls_evname(const uint32_t event_id, char ***event_name)
+//
+// EVENT NAME
+//
+
+int get_dom0cls_evname(const uint32_t event_id, char *result_str)
 {
     int event_sub = event_id & 0x00000fff;
     switch (event_sub) {
         case 0x001:
-            return asprintf(*event_name, "domain_create");
+            return sprintf(result_str, "domain_create");
         case 0x002:
-            return asprintf(*event_name, "domain_destroy");
+            return sprintf(result_str, "domain_destroy");
         default:
             return 0;
     }

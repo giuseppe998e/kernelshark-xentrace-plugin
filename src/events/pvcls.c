@@ -26,45 +26,49 @@
 
 #include "events.h"
 
-int get_pvcls_evname(const uint32_t event_id, char ***event_name)
+//
+// EVENT NAME
+//
+
+int get_pvcls_evname(const uint32_t event_id, char *result_str)
 {
     int event_sub = event_id & 0x00000fff;
     switch (event_sub) {
         case 0x001:
         case 0x101:
         case 0x00d:
-        case 0x00e:
-            return asprintf(*event_name, "hypercall");
+        case 0x00e: // TRC_PV_SUBCALL
+            return sprintf(result_str, "hypercall");
         case 0x003:
         case 0x103:
-            return asprintf(*event_name, "trap");
+            return sprintf(result_str, "trap");
         case 0x004:
         case 0x104:
-            return asprintf(*event_name, "page_fault");
+            return sprintf(result_str, "page_fault");
         case 0x005:
         case 0x105:
-            return asprintf(*event_name, "forced_invalid_op");
+            return sprintf(result_str, "forced_invalid_op");
         case 0x006:
         case 0x106:
-            return asprintf(*event_name, "emulate_privop");
+            return sprintf(result_str, "emulate_privop");
         case 0x007:
         case 0x107:
-            return asprintf(*event_name, "emulate_4G");
+            return sprintf(result_str, "emulate_4G");
         case 0x008:
         case 0x108:
-            return asprintf(*event_name, "math_state_restore");
+            return sprintf(result_str, "math_state_restore");
         case 0x009:
         case 0x109:
-            return asprintf(*event_name, "paging_fixup");
+            return sprintf(result_str, "paging_fixup");
         case 0x00a:
         case 0x10a:
-            return asprintf(*event_name, "gdt_ldt_mapping_fault");
+            return sprintf(result_str, "gdt_ldt_mapping_fault");
         case 0x00b:
         case 0x10b:
-            return asprintf(*event_name, "ptwr_emulation");
+            return sprintf(result_str, "ptwr_emulation");
         case 0x00c:
         case 0x10c:
-            return asprintf(*event_name, "ptwr_emulation_pae");
+            return sprintf(result_str, "ptwr_emulation_pae");
         default:
             return 0;
     }

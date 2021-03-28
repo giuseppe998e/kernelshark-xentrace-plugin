@@ -26,52 +26,56 @@
 
 #include "events.h"
 
-static int hw_pm_evname(const uint32_t event_sub, char ***event_name)
+//
+// EVENT NAME
+//
+
+static int hw_pm_evname(const uint32_t event_sub, char *result_str)
 {
     switch (event_sub) {
         case 0x001:
-            return asprintf(*event_name, "cpu_freq_change");
+            return sprintf(result_str, "cpu_freq_change");
         case 0x002:
-            return asprintf(*event_name, "cpu_idle_entry");
+            return sprintf(result_str, "cpu_idle_entry");
         case 0x003:
-            return asprintf(*event_name, "cpu_idle_exit");
+            return sprintf(result_str, "cpu_idle_exit");
         default:
             return 0;
     }
 }
 
-static int hw_irq_evname(const uint32_t event_sub, char ***event_name)
+static int hw_irq_evname(const uint32_t event_sub, char *result_str)
 {
     switch (event_sub) {
         case 0x001:
-            return asprintf(*event_name, "cleanup_move_delayed");
+            return sprintf(result_str, "cleanup_move_delayed");
         case 0x002:
-            return asprintf(*event_name, "cleanup_move");
+            return sprintf(result_str, "cleanup_move");
         case 0x003:
-            return asprintf(*event_name, "bind_vector");
+            return sprintf(result_str, "bind_vector");
         case 0x004:
-            return asprintf(*event_name, "clear_vector");
+            return sprintf(result_str, "clear_vector");
         case 0x005:
-            return asprintf(*event_name, "move_vector");
+            return sprintf(result_str, "move_vector");
         case 0x006:
-            return asprintf(*event_name, "assign_vector");
+            return sprintf(result_str, "assign_vector");
         case 0x007:
-            return asprintf(*event_name, "bogus_vector");
+            return sprintf(result_str, "bogus_vector");
         case 0x008:
-            return asprintf(*event_name, "do_irq");
+            return sprintf(result_str, "do_irq");
         default:
             return 0;
     }
 }
 
-int get_hwcls_evname(const uint32_t event_id, char ***event_name)
+int get_hwcls_evname(const uint32_t event_id, char *result_str)
 {
     int event_sub = event_id & 0x00000fff;
     switch (GET_EVENT_SUBCLS(event_id)) {
         case GET_EVENT_SUBCLS(TRC_HW_PM):
-            return hw_pm_evname(event_sub, event_name);
+            return hw_pm_evname(event_sub, result_str);
         case GET_EVENT_SUBCLS(TRC_HW_IRQ):
-            return hw_irq_evname(event_sub, event_name);
+            return hw_irq_evname(event_sub, result_str);
         default:
             return 0;
     }

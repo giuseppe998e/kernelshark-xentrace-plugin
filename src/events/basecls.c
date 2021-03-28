@@ -26,15 +26,20 @@
 
 #include "events.h"
 
-int get_basecls_evname(const uint32_t event_id, char ***event_name)
+//
+// EVENT NAME
+//
+
+int get_basecls_evname(const uint32_t event_id, char *result_str)
 {
-    switch (event_id) {
-        case TRC_TRACE_WRAP_BUFFER:
-            return asprintf(*event_name, "wrap_buffer");
-        case TRC_LOST_RECORDS:
-            return asprintf(*event_name, "lost_records");
+    int event_sub = event_id & 0x00000fff;
+    switch (event_sub) {
+        case 0x001:
+            return sprintf(result_str, "lost_records");
+        case 0x002:
+            return sprintf(result_str, "wrap_buffer");
         case (TRC_GEN | 0x004):
-            return asprintf(*event_name, "trace_irq");
+            return sprintf(result_str, "trace_irq");
         //case TRC_LOST_RECORDS_END:
         //    return asprintf(&event_name, "lost_records_end");
         default:

@@ -26,16 +26,20 @@
 
 #include "events.h"
 
-int get_memcls_evname(const uint32_t event_id, char ***event_name)
+//
+// EVENT NAME
+//
+
+int get_memcls_evname(const uint32_t event_id, char *result_str)
 {
     int event_sub = event_id & 0x00000fff;
     switch (event_sub) {
         case 0x001:
-            return asprintf(*event_name, "page_grant_map");
+            return sprintf(result_str, "page_grant_map");
         case 0x002:
-            return asprintf(*event_name, "page_grant_unmap");
+            return sprintf(result_str, "page_grant_unmap");
         case 0x003:
-            return asprintf(*event_name, "page_grant_transfer");
+            return sprintf(result_str, "page_grant_transfer");
         default:
             return 0;
     }

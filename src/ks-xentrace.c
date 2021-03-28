@@ -41,6 +41,8 @@
 #define ENV_XEN_CPUHZ "XEN_CPUHZ"
 #define ENV_XEN_ABSTS "XEN_ABSTS"
 
+#define MAX_EVNAME_LENGTH 32
+
 #define DEFAULT_CPU_HZ 2400000000LL
 #define QHZ_FROM_HZ(_hz) (((_hz) << 10) / 1000000000)
 
@@ -98,58 +100,58 @@ static char *get_task(struct kshark_data_stream *stream,
  * 
  */
 static char *get_event_name(struct kshark_data_stream *stream,
-                            const struct kshark_entry *entry)
+                                const struct kshark_entry *entry)
 {
     xt_event *event = xtp_get_event(I.parser, entry->offset);
     if (!event)
         return NULL;
 
     uint32_t event_id = (event->rec).id;
-    char **event_name;
-    int success;
+    char *result_str = malloc(sizeof(*result_str) * MAX_EVNAME_LENGTH);
+    int result_ok = 0;
 
     switch ( GET_EVENT_CLS(event_id) ) {
         // General trace
         case GET_EVENT_CLS(TRC_GEN):
-            success = get_basecls_evname(event_id, &event_name);
+            result_ok = get_basecls_evname(event_id, result_str);
             break;
         // Xen Scheduler trace
         case GET_EVENT_CLS(TRC_SCHED):
-            success = get_schedcls_evname(event_id, &event_name);
+            result_ok = get_schedcls_evname(event_id, result_str);
             break;
         // Xen DOM0 operation trace
         case GET_EVENT_CLS(TRC_DOM0OP):
-            success = get_dom0cls_evname(event_id, &event_name);
+            result_ok = get_dom0cls_evname(event_id, result_str);
             break;
         // Xen HVM trace
         case GET_EVENT_CLS(TRC_HVM):
-            success = get_hvmcls_evname(event_id, &event_name);
+            result_ok = get_hvmcls_evname(event_id, result_str);
             break;
         // Xen memory trace
         case GET_EVENT_CLS(TRC_MEM):
-            success = get_memcls_evname(event_id, &event_name);
+            result_ok = get_memcls_evname(event_id, result_str);
             break;
         // Xen PV traces
         case GET_EVENT_CLS(TRC_PV):
-            success = get_pvcls_evname(event_id, &event_name);
+            result_ok = get_pvcls_evname(event_id, result_str);
             break;
         // Xen shadow tracing
         case GET_EVENT_CLS(TRC_SHADOW):
-            success = get_shdwcls_evname(event_id, &event_name);
+            result_ok = get_shdwcls_evname(event_id, result_str);
             break;
         // Xen hardware-related traces
         case GET_EVENT_CLS(TRC_HW):
-            success = get_hwcls_evname(event_id, &event_name);
+            result_ok = get_hwcls_evname(event_id, result_str);
             break;
     }
 
-    if (success < 1) {
-        success = asprintf(event_name, "Unknown (0x%08x)", event_id);
-        if (success < 1)
+    if (result_ok < 1) {
+        result_ok = sprintf(result_str, "unknown (0x%08x)", event_id);
+        if (result_ok < 1)
             return NULL;
     }
 
-    return *event_name;
+    return result_str;
 }
 
 /**
@@ -903,7 +905,6 @@ static void read_env_vars()
     I.cpu_hz = env_cpu_hz ? strtol(env_cpu_hz, NULL, 10) : DEFAULT_CPU_HZ;
     I.cpu_qhz = QHZ_FROM_HZ(I.cpu_hz);
 
-    
     // Save the tsc of the first event to
     // perform the calc of the relative ts.
     char* env_abs_ts = secure_getenv(ENV_XEN_ABSTS);
@@ -970,7 +971,7 @@ int KSHARK_INPUT_INITIALIZER(struct kshark_data_stream *stream)
     // Initialize XenTrace Parser
     I.parser = xtp_init(stream->file);
     unsigned n_events = xtp_execute(I.parser);
-    if (!(I.parser && n_events)) {
+    if ( !(I.parser && n_events) ) {
         free(interface);
         return -ENOMEM;
     }
