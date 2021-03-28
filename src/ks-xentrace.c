@@ -50,6 +50,9 @@
 #define MAX_EVINFO_LENGTH 128
 
 #define DEFAULT_CPU_HZ 2400000000LL
+#define GHZ 1000000000LL
+#define MHZ 1000000LL
+#define KHZ 1000LL
 #define QHZ_FROM_HZ(_hz) (((_hz) << 10) / 1000000000)
 
 static const char *format_name = "xentrace_binary";
@@ -298,14 +301,38 @@ static ssize_t load_entries(struct kshark_data_stream *stream,
     return n_events;
 }
 
+static uint64_t parse_cpu_hz(char *arg) {
+    char *next_ptr;
+    float hz_base = strtof(arg, &next_ptr);
+
+    if (next_ptr == arg) {
+        fprintf(stderr, "[XenTrace WARN] Invalid cpu_hz %s. The default value will be used.\n", arg);
+        return DEFAULT_CPU_HZ;
+    }
+
+    switch (*next_ptr) {
+    case '\0':
+        return (uint64_t) hz_base;
+    case 'G':
+        return hz_base * GHZ;
+    case 'M':
+        return hz_base * MHZ;
+    case 'K':
+        return hz_base * KHZ;
+    default:
+        fprintf(stderr, "[XenTrace WARN] Unknown suffix %c. The default value will be used.\n", *next_ptr);
+        return DEFAULT_CPU_HZ;
+    }
+}
+
 /**
  *
  */
 static void read_env_vars()
 {
     // Read trace CPU Hz (or set default val)
-    char* env_cpu_hz = secure_getenv(ENV_XEN_CPUHZ);
-    I.cpu_hz = env_cpu_hz ? strtol(env_cpu_hz, NULL, 10) : DEFAULT_CPU_HZ;
+    char* env_base_hz = secure_getenv(ENV_XEN_CPUHZ);
+    I.cpu_hz = env_base_hz ? parse_cpu_hz(env_base_hz) : DEFAULT_CPU_HZ;
     I.cpu_qhz = QHZ_FROM_HZ(I.cpu_hz);
 
     // Save the tsc of the first event to
