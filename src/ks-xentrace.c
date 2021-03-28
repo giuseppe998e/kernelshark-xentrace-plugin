@@ -222,7 +222,7 @@ static char *get_info(struct kshark_data_stream *stream,
         DBG_PRINTF("result_ok(%d) is greater than the maximum length!\n", result_ok);
     #endif
 
-    return result_ok > 0 ? result_str : NULL;
+    return (result_ok > 0) ? result_str : NULL;
 }
 
 /**
