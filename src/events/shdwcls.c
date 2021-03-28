@@ -84,8 +84,58 @@ int get_shdwcls_evname(const uint32_t event_id, char *result_str)
     }
 }
 
-int get_shdwcls_evinfo(const uint32_t event_id, const uint32_t *event_extra, char ***event_info)
+//
+// EVENT INFO
+//
+
+int get_shdwcls_evinfo(const uint32_t event_id,
+                    const uint32_t *event_extra, char *result_str)
 {
-    return 0;
+    int event_sub = event_id & 0x00000fff;
+    switch (event_sub) {
+        case 0x001:
+            return sprintf(result_str, "gl1e = 0x%08x%08x, va = 0x%08x, flags = 0x%08x", event_extra[1], event_extra[0], event_extra[2], event_extra[4]);
+        case 0x101:
+        case 0x106:
+            return sprintf(result_str, "gl1e = 0x%08x%08x, va = 0x%08x%08x, flags = 0x%08x", event_extra[1], event_extra[0], event_extra[3], event_extra[2], event_extra[4]);
+        case 0x002:
+        case 0x003:
+        case 0x004:
+        case 0x005:
+        case 0x007:
+            return sprintf(result_str, "va = 0x%08x", event_extra[0]);
+        case 0x102:
+        case 0x103:
+        case 0x104:
+        case 0x105:
+        case 0x107:
+            return sprintf(result_str, "va = 0x%08x%08x", event_extra[1], event_extra[0]);
+        case 0x006:
+            return sprintf(result_str, "gl1e = 0x%08x, va = 0x%08x, flags = 0x%08x", event_extra[0], event_extra[1], event_extra[2]);
+        case 0x008:
+            return sprintf(result_str, "gl1e = 0x%08x, write_val = 0x%08x, va = 0x%08x, flags = 0x%08x", event_extra[0], event_extra[1], event_extra[2], event_extra[3]);
+        case 0x108:
+            return sprintf(result_str, "gl1e = 0x%08x%08x, write_val = 0x%08x%08x, va = 0x%08x%08x, flags = 0x%08x", event_extra[1], event_extra[0], event_extra[3], event_extra[2], event_extra[5], event_extra[4], event_extra[6]);
+        case 0x009:
+        case 0x00a:
+        case 0x00b:
+            return sprintf(result_str, "va = 0x%08x, gfn = 0x%08x", event_extra[0], event_extra[1]);
+        case 0x109:
+        case 0x10a:
+        case 0x10b:
+            return sprintf(result_str, "va = 0x%08x%08x, gfn = 0x%08x%08x", event_extra[1], event_extra[0], event_extra[3], event_extra[2]);
+        case 0x00c:
+        case 0x00d:
+        case 0x00e:
+        case 0x00f:
+            return sprintf(result_str, "gfn = 0x%08x", event_extra[0]);
+        case 0x10c:
+        case 0x10d:
+        case 0x10e:
+        case 0x10f:
+            return sprintf(result_str, "gfn = 0x%08x%08x", event_extra[1], event_extra[0]);
+        default:
+            return 0;
+    }
 }
 

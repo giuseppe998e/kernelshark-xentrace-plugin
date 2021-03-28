@@ -174,8 +174,170 @@ int get_hvmcls_evname(const uint32_t event_id, char *result_str)
     }
 }
 
-int get_hvmcls_evinfo(const uint32_t event_id, 
-                    const uint32_t *event_extra, char ***event_info)
+//
+// EVENT INFO
+//
+
+static int hvm_emul_evinfo(const uint32_t event_sub,
+                    const uint32_t *event_extra, char *result_str)
 {
-    return 0;
+    switch (event_sub) {
+        case 0x001:
+            return sprintf(result_str, "create [ tn = %d, irq = %d, delta = 0x%08x%08x, period = 0x%08x%08x ]",
+                                event_extra[0], event_extra[1], event_extra[3],
+                                event_extra[2], event_extra[5], event_extra[4]);
+        case 0x002:
+        case 0x003:
+            return sprintf(result_str, "create [ delta = 0x%016x, period = 0x%016x ]", event_extra[0],
+                                event_extra[1]);
+        case 0x004:
+            return sprintf(result_str, "create [ delta = 0x%08x%08x, period = 0x%08x%08x, irq = %d ]",
+                                event_extra[1], event_extra[0], event_extra[3],
+                                event_extra[2], event_extra[4]);
+        case 0x005:
+            return sprintf(result_str, "destroy [ tn = %d ]", event_extra[0]);
+        case 0x006:
+        case 0x007:
+        case 0x008:
+            return sprintf(result_str, "destroy [ ]");
+        case 0x009:
+        case 0x00a:
+            return sprintf(result_str, "callback [ ]");
+        case 0x00b:
+            return sprintf(result_str, "int_output = %d, is_master = %d, irq = %d",
+                                event_extra[0], event_extra[1], event_extra[2]);
+        case 0x00c:
+            return sprintf(result_str, "vcpu_kick [ irq = %d ]", event_extra[0]);
+        case 0x00d:
+            return sprintf(result_str, "is_master = %d, irq = %d", event_extra[0], event_extra[1]);
+        case 0x00e:
+        case 0x00f:
+            return sprintf(result_str, "irq = %d", event_extra[0]);
+        case 0x010:
+            return sprintf(result_str, "accept_pic_intr = %d, int_output = %d", event_extra[0],
+                                event_extra[1]);
+        case 0x011:
+            return sprintf(result_str, "i8259_target = %d, accept_pic_int = %d", event_extra[0],
+                                event_extra[1]);
+        default:
+            return 0;
+    }
+}
+
+static int hvm_entryexit_evinfo(const uint32_t event_sub, 
+                    const uint32_t *event_extra, char *result_str)
+{
+    switch (event_sub) {
+        //case 0x001:
+        //    return sprintf(result_str, "");
+        case 0x002:
+        case 0x402:
+            return sprintf(result_str, "exitcode = 0x%08x, rIP  = 0x%08x", event_extra[0], event_extra[1]);
+        case 0x102:
+        case 0x502:
+            return sprintf(result_str, "exitcode = 0x%08x, rIP  = 0x%08x%08x",
+                                event_extra[0], event_extra[2], event_extra[1]);
+        //case 0x401:
+        //    return sprintf(result_str, "");
+        default:
+            return 0;
+    }
+}
+
+static int hvm_handler_evinfo(const uint32_t event_sub, 
+                    const uint32_t *event_extra, char *result_str)
+{
+    switch (event_sub) {
+        case 0x001:
+            return sprintf(result_str, "errorcode = 0x%02x, virt = 0x%08x", event_extra[1], event_extra[0]);
+        case 0x101:
+            return sprintf(result_str, "errorcode = 0x%02x, virt = 0x%08x%08x", event_extra[2], event_extra[1],
+                                event_extra[0]);
+        case 0x002:
+            return sprintf(result_str, "errorcode = 0x%02x, virt = 0x%08x", event_extra[0], event_extra[1]);
+        case 0x102:
+            return sprintf(result_str, "errorcode = 0x%02x, virt = 0x%08x%08x", event_extra[0], event_extra[2],
+                                event_extra[1]);
+        case 0x003:
+            return sprintf(result_str, "vector = 0x%02x, errorcode = 0x%04x", event_extra[0], event_extra[1]);
+        case 0x004:
+            return sprintf(result_str, "vector = 0x%02x, fake = %d", event_extra[0], event_extra[1]);
+        case 0x005:
+        case 0x00F:
+        case 0x023:
+            return sprintf(result_str, "vector = 0x%02x", event_extra[0]);
+        case 0x006:
+        case 0x007:
+            return sprintf(result_str, "port = 0x%04x, size = %d", event_extra[0], event_extra[1]);
+        case 0x008:
+        case 0x009:
+            return sprintf(result_str, "CR# = %d, value = 0x%08x", event_extra[0], event_extra[1]);
+        case 0x108:
+        case 0x109:
+            return sprintf(result_str, "CR# = %d, value = 0x%08x%08x", event_extra[0], event_extra[2],
+                                event_extra[1]);
+        //case 0x00A:
+        //    return sprintf(result_str, "");
+        //case 0x00B:
+        //    return sprintf(result_str, "");
+        case 0x00C:
+        case 0x00D:
+            return sprintf(result_str, "MSR# = 0x%08x, value = 0x%08x%08x", event_extra[0], 
+                            
+                                                event_extra[2], event_extra[1]);
+        case 0x00E:
+            return sprintf(result_str, "func = 0x%08x, eax = 0x%08x, ebx = 0x%08x, ecx=0x%08x, edx = 0x%08x",
+                                event_extra[0], event_extra[1], event_extra[2], event_extra[3], event_extra[4]);
+        //case 0x010:
+        //    return sprintf(result_str, "");
+        //case 0x011:
+        //    return sprintf(result_str, "");
+        case 0x012:
+            return sprintf(result_str, "func = 0x%08x", event_extra[0]);
+        case 0x013:
+            return sprintf(result_str, "intpending = %d", event_extra[0]);
+        case 0x014:
+            return sprintf(result_str, "is invlpga? = %d, virt = 0x%08x", event_extra[0], event_extra[1]);
+        case 0x114:
+            return sprintf(result_str, "is invlpga? = %d, virt = 0x%08x%08x", event_extra[0],
+                                event_extra[2], event_extra[1]);
+        //case 0x015:
+        //    return sprintf(result_str, "");
+        case 0x016:
+        case 0x216:
+            return sprintf(result_str, "port = 0x%04x, data = 0x%08x", event_extra[0], event_extra[1]);
+        case 0x017:
+        case 0x217:
+            return sprintf(result_str, "port = 0x%08x, data = 0x%08x", event_extra[0], event_extra[1]);
+        //case 0x018:
+        //    return sprintf(result_str, "");
+        case 0x019:
+        case 0x020:
+            return sprintf(result_str, "value = 0x%08x", event_extra[0]);
+        case 0x119:
+        case 0x01a:
+            return sprintf(result_str, "value = 0x%08x%08x", event_extra[1], event_extra[0]);
+        case 0x021:
+            return sprintf(result_str, "gpa = 0x%08x%08x mfn = 0x%08x%08x qual = 0x%04x p2mt = 0x%04x",
+                                event_extra[1], event_extra[0], event_extra[3], event_extra[2], 
+                                event_extra[4], event_extra[5]);
+        default:
+            return 0;
+    }
+}
+
+int get_hvmcls_evinfo(const uint32_t event_id, 
+                    const uint32_t *event_extra, char *result_str)
+{
+    int event_sub = event_id & 0x00000fff;
+    switch (GET_EVENT_SUBCLS(event_id)) {
+        case GET_EVENT_SUBCLS(TRC_HVM_EMUL):
+            return hvm_emul_evinfo(event_sub, event_extra, result_str);
+        case GET_EVENT_SUBCLS(TRC_HVM_ENTRYEXIT):
+            return hvm_entryexit_evinfo(event_sub, event_extra, result_str);
+        case GET_EVENT_SUBCLS(TRC_HVM_HANDLER):
+            return hvm_handler_evinfo(event_sub, event_extra, result_str);
+        default:
+            return 0;
+    }
 }

@@ -47,15 +47,23 @@ int get_basecls_evname(const uint32_t event_id, char *result_str)
     }
 }
 
-int get_basecls_evinfo(const uint32_t event_id, const uint32_t *event_extra, char ***event_info)
+//
+// EVENT INFO
+//
+
+int get_basecls_evinfo(const uint32_t event_id,
+                    const uint32_t *event_extra, char *result_str)
 {
-    switch (event_id) {
-        case TRC_TRACE_WRAP_BUFFER:
-            return 0;
-        case TRC_LOST_RECORDS:
-            return 0;
+    int event_sub = event_id & 0x00000fff;
+    switch (event_sub) {
+        case 0x001:
+        case 0x002:
+            return sprintf(result_str, "0x%08x", event_extra[0]);
+        case (TRC_GEN | 0x004):
+            return sprintf(result_str, "vector = %d, count = %d, tot_cycles = 0x%08x, max_cycles = 0x%08x",
+                                event_extra[0], event_extra[1], event_extra[2], event_extra[3]);
         //case TRC_LOST_RECORDS_END:
-        //    return 0;
+        //    return asprintf(&event_name, "??");
         default:
             return 0;
     }

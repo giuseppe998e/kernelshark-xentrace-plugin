@@ -43,7 +43,12 @@ int get_dom0cls_evname(const uint32_t event_id, char *result_str)
     }
 }
 
-int get_dom0cls_evinfo(const uint32_t event_id, const uint32_t *event_extra, char ***event_info)
+//
+// EVENT INFO
+//
+
+int get_dom0cls_evinfo(const uint32_t event_id, 
+                    const uint32_t *event_extra, char *result_str)
 {
-    return 0;
+    return sprintf(result_str, "dom = 0x%08x", event_extra[0]);
 }

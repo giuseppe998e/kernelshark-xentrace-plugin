@@ -74,7 +74,70 @@ int get_pvcls_evname(const uint32_t event_id, char *result_str)
     }
 }
 
-int get_pvcls_evinfo(const uint32_t event_id, const uint32_t *event_extra, char ***event_info)
+//
+// EVENT INFO
+//
+
+int get_pvcls_evinfo(const uint32_t event_id,
+                const uint32_t *event_extra, char *result_str)
 {
-    return 0;
+    int event_sub = event_id & 0x00000fff;
+    switch (event_sub) {
+        case 0x001:
+            return sprintf(result_str, "eip = 0x%08x, eax = 0x%08x", event_extra[0],
+                                event_extra[1]);
+        case 0x101:
+            return sprintf(result_str, "rip = 0x%08x%08x, eax = 0x%08x", event_extra[1],
+                                event_extra[0], event_extra[2]);
+        case 0x003:
+            return sprintf(result_str, "eip = 0x%08x, trapnr:error = 0x%08x", event_extra[0],
+                                event_extra[1]);
+        case 0x103:
+            return sprintf(result_str, "rip = 0x%08x%08x, trapnr:error = 0x%08x", event_extra[1],
+                                event_extra[0], event_extra[2]);
+        case 0x004:
+            return sprintf(result_str, "eip = 0x%08x, addr = 0x%08x, error = 0x%08x", event_extra[0],
+                                event_extra[1], event_extra[2]);
+        case 0x104:
+            return sprintf(result_str, "rip = 0x%08x%08x, addr = 0x%08x%08x, error = 0x%08x",
+                                event_extra[1], event_extra[0], event_extra[3], event_extra[2], event_extra[4]);
+        case 0x005:
+        case 0x006:
+        case 0x007:
+            return sprintf(result_str, "eip = 0x%08x", event_extra[0]);
+        case 0x105:
+        case 0x106:
+        case 0x107:
+            return sprintf(result_str, "rip = 0x%08x%08x", event_extra[1], event_extra[0]);
+        //case 0x008:
+        //    return sprintf(result_str, "");
+        //case 0x108:
+        //    return sprintf(result_str, "");
+        case 0x009:
+            return sprintf(result_str, "eip = 0x%08x, addr = 0x%08x", event_extra[0], 
+                                event_extra[1]);
+        case 0x109:
+            return sprintf(result_str, "rip = 0x%08x%08x, addr = 0x%08x%08x", event_extra[1], 
+                                event_extra[0], event_extra[3], event_extra[2]);
+        case 0x00a:
+            return sprintf(result_str, "eip = 0x%08x, offset = 0x%08x", event_extra[0], 
+                                event_extra[1]);
+        case 0x10a:
+            return sprintf(result_str, "rip = 0x%08x%08x, offset = 0x%08x%08x", event_extra[1], 
+                                event_extra[0], event_extra[3], event_extra[2]);
+        case 0x00b:
+        case 0x00c:
+            return sprintf(result_str, "addr = 0x%08x, eip = 0x%08x, npte = 0x%08x%08x", event_extra[2], 
+                                event_extra[3], event_extra[1], event_extra[0]);
+        case 0x10b:
+        case 0x10c:
+            return sprintf(result_str, "addr = 0x%08x%08x, rip = 0x%08x%08x, npte = 0x%08x%08x", 
+                                event_extra[3], event_extra[2], event_extra[5], event_extra[4], event_extra[1], 
+                                event_extra[0]);
+        case 0x00d:
+        case 0x00e: // TRC_PV_SUBCALL
+            return sprintf(result_str, "op = 0x%08x", event_extra[0]);
+        default:
+            return 0;
+    }
 }

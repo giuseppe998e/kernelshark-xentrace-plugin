@@ -220,7 +220,162 @@ int get_schedcls_evname(const uint32_t event_id, char *result_str)
     }
 }
 
-int get_schedcls_evinfo(const uint32_t event_id, const uint32_t *event_extra, char ***event_info)
+//
+// EVENT INFO
+//
+
+static int sched_min_evinfo(const uint32_t event_sub, 
+                        const uint32_t *event_extra, char *result_str)
 {
-    return 0;
+    return sprintf(result_str, "dom:vcpu = 0x%08x", event_extra[0]);
+}
+
+static int sched_verbs_evinfo(const uint32_t event_sub, 
+                        const uint32_t *event_extra, char *result_str)
+{
+    switch (event_sub) {
+        case 0x001:
+        case 0x002:
+        case 0x009:
+            return sprintf(result_str, "domid = 0x%08x", event_extra[0]);
+        case 0x003:
+        case 0x004:
+        case 0x005:
+        case 0x006:
+            return sprintf(result_str, "dom:vcpu = 0x%04x%04x", event_extra[0], event_extra[1]);
+        case 0x007:
+            return sprintf(result_str, "dom:vcpu = 0x%04x%04x, reason = 0x%08x", event_extra[0], event_extra[1], event_extra[2]);
+        //case 0x008:
+        //    return sprintf(result_str, "");
+        case 0x00a:
+            return sprintf(result_str, "prev<dom:vcpu> = 0x%04x%04x, next<dom:vcpu> = 0x%04x%04x", event_extra[0], event_extra[1], event_extra[2], event_extra[3]);
+        //case 0x00b:
+        //    return sprintf(result_str, "");
+        //case 0x00c:
+        //    return sprintf(result_str, "");
+        //case 0x00d:
+        //    return sprintf(result_str, "");
+        case 0x00e:
+            return sprintf(result_str, "dom:vcpu = 0x%04x%04x, runtime = %d", event_extra[0], event_extra[1], event_extra[2]);
+        case 0x00f:
+            return sprintf(result_str, "new_dom:vcpu = 0x%04x%04x, time = %d, r_time = %d", event_extra[0], event_extra[1], event_extra[2], event_extra[3]);
+        case 0x010:
+            return sprintf(result_str, "dom:vcpu = 0x%04x%04x, reason = 0x%08x", event_extra[0], event_extra[1], event_extra[2]);
+        case 0x011:
+            return sprintf(result_str, "dom:vcpu = 0x%04x%04x, runtime = %d, r_time = %d", event_extra[0], event_extra[1], event_extra[2], event_extra[3]);
+        default:
+            return 0;
+    }
+}
+
+static int sched_class_evinfo(const uint32_t event_sub, 
+                        const uint32_t *event_extra, char *result_str)
+{
+    switch (event_sub) {
+        //case 0x001:
+        //    return sprintf(result_str, "");
+        case 0x002:
+        case 0x003:
+            return sprintf(result_str, "dom:vcpu = 0x%04x%04x, active = %d", event_extra[0], event_extra[1], event_extra[2]);
+        case 0x004:
+            return sprintf(result_str, "dom:vcpu = 0x%04x%04x, from = %d", event_extra[1], event_extra[2], event_extra[0]);
+        case 0x005:
+            return sprintf(result_str, "dom:vcpu = 0x%04x%04x, cpu = %d", event_extra[0], event_extra[1], event_extra[2]);
+        case 0x006:
+        case 0x206:
+            return sprintf(result_str, "cpu = %d", event_extra[0]);
+        case 0x007:
+        case 0x008:
+            return sprintf(result_str, "dom:vcpu = 0x%04x%04x", event_extra[0], event_extra[1]);
+        case 0x009:
+            return sprintf(result_str, "cpu[16]:tasklet[8]:idle[8] = %08x", event_extra[0]);
+        case 0x00A:
+        case 0x215:
+            return sprintf(result_str, "dom:vcpu = 0x%08x, runtime = %d", event_extra[0], event_extra[1]);
+        case 0x00B:
+            return sprintf(result_str, "peer_cpu = %d, checked = %d", event_extra[0], event_extra[1]);
+
+        //case 0x201:
+        //    return sprintf(result_str, "");
+        case 0x202:
+            return sprintf(result_str, "[ dom:vcpu = 0x%08x, pos = %d]", event_extra[0], event_extra[1]);
+        case 0x203:
+            return sprintf(result_str, "burn [ dom:vcpu = 0x%08x, credit = %d, budget = %d, delta = %d ]", event_extra[0], event_extra[1], event_extra[2], event_extra[3]);
+        //case 0x204:
+        //    return sprintf(result_str, "");
+        case 0x205:
+            return sprintf(result_str, "dom:vcpu = 0x%08x, credit = %d, score = %d", event_extra[0], event_extra[1], event_extra[2]);
+        case 0x207:
+            return sprintf(result_str, "dom:vcpu = 0x%08x, cr_start = %d, cr_end = %d", event_extra[0], event_extra[1], event_extra[2]);
+        //case 0x208:
+        //    return sprintf(result_str, "");
+        //case 0x209:
+        //    return sprintf(result_str, "");
+        case 0x20a:
+            return sprintf(result_str, "dom:vcpu = 0x%08x, rq_id = %d", event_extra[0], event_extra[1]);
+        case 0x20b:
+            return sprintf(result_str, "dom:vcpu = 0x%08x, vcpuload = 0x%08x%08x, wshift = %d", event_extra[2], event_extra[1], event_extra[0], event_extra[3]);
+        case 0x20c:
+            return sprintf(result_str, "rq_load[16]:rq_id[8]:wshift[8] = 0x%08x, rq_avgload = 0x%08x%08x, b_avgload = 0x%08x%08x", event_extra[4], event_extra[1], event_extra[0], event_extra[3], event_extra[2]);
+        case 0x20d:
+            return sprintf(result_str, "dom:vcpu = 0x%08x, processor = %d credit = %d", event_extra[0], event_extra[1], event_extra[2]);
+        case 0x20e:
+            return sprintf(result_str, "rq_id[16]:max_weight[16] = 0x%08x", event_extra[0]);
+        case 0x20f:
+            return sprintf(result_str, "dom:vcpu = 0x%08x, rq_id[16]:trq_id[16] = 0x%08x", event_extra[0], event_extra[1]);
+        case 0x210:
+            return sprintf(result_str, "lrq_id[16]:orq_id[16] = 0x%08x, delta = %d", event_extra[0], event_extra[1]);
+        case 0x211:
+            return sprintf(result_str, "l_bavgload = 0x%08x%08x, o_bavgload = 0x%08x%08x, lrq_id[16]:orq_id[16] = 0x%08x", event_extra[1], event_extra[0], event_extra[3], event_extra[2], event_extra[4]);
+        case 0x212:
+            return sprintf(result_str, "b_avgload = 0x%08x%08x, dom:vcpu = 0x%08x, rq_id[16]:new_cpu[16] = %d", event_extra[1], event_extra[0], event_extra[2], event_extra[3]);
+        case 0x213:
+            return sprintf(result_str, "dom:vcpu = 0x%08x, credit = %d, tickled_cpu = %d", event_extra[0], event_extra[2], event_extra[1]);
+        case 0x214:
+            return sprintf(result_str, "rq:cpu = 0x%08x, tasklet[8]:idle[8]:smt_idle[8]:tickled[8] = %08x", event_extra[0], event_extra[1]);
+        case 0x216:
+            return sprintf(result_str, "dom:vcpu = 0x%08x", event_extra[0]);
+
+        case 0x801:
+            return sprintf(result_str, "cpu = %d", event_extra[0]);
+        case 0x802:
+        case 0x804:
+            return sprintf(result_str, "dom:vcpu = 0x%08x, cur_deadline = 0x%08x%08x, cur_budget = 0x%08x%08x", event_extra[0], event_extra[2], event_extra[1], event_extra[4], event_extra[3]);
+        case 0x803:
+            return sprintf(result_str, "dom:vcpu = 0x%08x, cur_budget = 0x%08x%08x, delta = %d", event_extra[0], event_extra[2], event_extra[1], event_extra[3]);
+        //case 0x805:
+        //    return sprintf(result_str, "");
+        case 0x806:
+            return sprintf(result_str, "cpu[16]:tasklet[8]:idle[4]:tickled[4] = %08x", event_extra[0]);
+
+        case 0xA01:
+            return sprintf(result_str, "dom:vcpu = 0x%08x, new_cpu = %d", event_extra[0], event_extra[1]);
+        case 0xA02:
+        case 0xA03:
+            return sprintf(result_str, "dom:vcpu = 0x%08x, cpu = %d", event_extra[0], event_extra[1]);
+        case 0xA04:
+            return sprintf(result_str, "dom:vcpu = 0x%08x, new_cpu:cpu = 0x%08x", event_extra[0], event_extra[1]);
+        case 0xA05:
+            return sprintf(result_str, "cpu[16]:tasklet[16] = %08x, dom:vcpu = 0x%08x", event_extra[0], event_extra[1]);
+        //case 0xA06:
+        //    return sprintf(result_str, "");
+        default:
+            return 0;
+    }
+}
+
+int get_schedcls_evinfo(const uint32_t event_id,
+                    const uint32_t *event_extra, char *result_str)
+{
+    int event_sub = event_id & 0x00000fff;
+    switch (GET_EVENT_SUBCLS(event_id)) {
+        case GET_EVENT_SUBCLS(TRC_SCHED_MIN):
+            return sched_min_evinfo(event_sub, event_extra, result_str);
+        case GET_EVENT_SUBCLS(TRC_SCHED_VERBOSE):
+            return sched_verbs_evinfo(event_sub, event_extra, result_str);
+        case GET_EVENT_SUBCLS(TRC_SCHED_CLASS):
+            return sched_class_evinfo(event_sub, event_extra, result_str);
+        default:
+            return 0;
+    }
 }
