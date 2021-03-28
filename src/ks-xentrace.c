@@ -228,23 +228,20 @@ static char *get_info(struct kshark_data_stream *stream,
 static char *dump_entry(struct kshark_data_stream *stream,
                             const struct kshark_entry *entry)
 {
+    double ev_ts = (double)entry->ts / 1e9;
     char *ev_task = get_task(stream, entry),
         *ev_name  = get_event_name(stream, entry),
         *ev_info  = get_info(stream, entry),
-        *ev_dump;
+        *result_str;
 
-    double ts = (double)entry->ts / 1e9;
-    int ret = asprintf(&ev_dump, "%.6f - %s - %s [ %s ]", 
-                                ts, ev_task, ev_name, ev_info);
+    int result_ok = asprintf(&result_str, "%.6f - %s - %s [ %s ]", 
+                            ev_ts, ev_task, ev_name, ev_info);
 
     free(ev_task);
     free(ev_name);
     free(ev_info);
 
-    if (ret <= 0)
-        return NULL;
-
-    return ev_dump;
+    return (result_ok > 0) ? result_str : NULL;
 }
 
 /**
