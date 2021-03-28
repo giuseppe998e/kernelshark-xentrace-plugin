@@ -1,6 +1,3 @@
-[submodule "lib/kernel-shark-v2.beta"]
-	path = lib/kernel-shark-v2.beta
-	url = git@github.com:yordan-karadzhov/kernel-shark-v2.beta.git
 [submodule "lib/xentrace-parser"]
 	path = lib/xentrace-parser
 	url = git@github.com:giuseppe998e/xentrace-parser.git
