@@ -366,14 +366,14 @@ static void read_env_vars()
  */
 static void init_methods(struct kshark_generic_stream_interface *interface)
 {
+    interface->get_pid  = get_pid;
     interface->get_event_id = get_event_id;
     interface->get_event_name = get_event_name;
     interface->get_task = get_task;
-    interface->get_pid  = get_pid;
     interface->get_info = get_info;
 
-    interface->load_entries = load_entries;
     interface->dump_entry   = dump_entry;
+    interface->load_entries = load_entries;
 }
 
 /**
