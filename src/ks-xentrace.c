@@ -100,6 +100,20 @@ static char *get_task(struct kshark_data_stream *stream,
 }
 
 /**
+ *
+ */
+static const int get_event_id(struct kshark_data_stream *stream,
+                                const struct kshark_entry *entry)
+{
+    if (entry->visible & KS_PLUGIN_UNTOUCHED_MASK) {
+        xt_event *event = xtp_get_event(I.parser, entry->offset);
+        return event ? (event->rec).id : -EFAULT;
+    }
+
+    return KS_EMPTY_BIN;
+}
+
+/**
  * 
  */
 static char *get_event_name(struct kshark_data_stream *stream,
@@ -352,6 +366,7 @@ static void read_env_vars()
  */
 static void init_methods(struct kshark_generic_stream_interface *interface)
 {
+    interface->get_event_id = get_event_id;
     interface->get_event_name = get_event_name;
     interface->get_task = get_task;
     interface->get_pid  = get_pid;
