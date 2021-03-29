@@ -92,11 +92,11 @@ static char *get_task(struct kshark_data_stream *stream,
 
     xt_header *hdr = &event->hdr;
     char *result_str;
-    int result_ok = (hdr->dom == XEN_DOM_IDLE) ?
+    int result_len = (hdr->dom == XEN_DOM_IDLE) ?
                 asprintf(&result_str, "idle/v%u", hdr->vcpu) :
                     asprintf(&result_str, "d%u/v%u", hdr->dom, hdr->vcpu);
 
-    return (result_ok > 0) ? result_str : NULL;
+    return (result_len > 0) ? result_str : NULL;
 }
 
 /**
@@ -125,54 +125,54 @@ static char *get_event_name(struct kshark_data_stream *stream,
 
     uint32_t event_id = (event->rec).id;
     char *result_str = malloc(sizeof(*result_str) * MAX_EVNAME_LENGTH);
-    int result_ok = 0;
+    int result_len = 0;
 
     switch ( GET_EVENT_CLS(event_id) ) {
         // General trace
         case GET_EVENT_CLS(TRC_GEN):
-            result_ok = get_basecls_evname(event_id, result_str);
+            result_len = get_basecls_evname(event_id, result_str);
             break;
         // Xen Scheduler trace
         case GET_EVENT_CLS(TRC_SCHED):
-            result_ok = get_schedcls_evname(event_id, result_str);
+            result_len = get_schedcls_evname(event_id, result_str);
             break;
         // Xen DOM0 operation trace
         case GET_EVENT_CLS(TRC_DOM0OP):
-            result_ok = get_dom0cls_evname(event_id, result_str);
+            result_len = get_dom0cls_evname(event_id, result_str);
             break;
         // Xen HVM trace
         case GET_EVENT_CLS(TRC_HVM):
-            result_ok = get_hvmcls_evname(event_id, result_str);
+            result_len = get_hvmcls_evname(event_id, result_str);
             break;
         // Xen memory trace
         case GET_EVENT_CLS(TRC_MEM):
-            result_ok = get_memcls_evname(event_id, result_str);
+            result_len = get_memcls_evname(event_id, result_str);
             break;
         // Xen PV traces
         case GET_EVENT_CLS(TRC_PV):
-            result_ok = get_pvcls_evname(event_id, result_str);
+            result_len = get_pvcls_evname(event_id, result_str);
             break;
         // Xen shadow tracing
         case GET_EVENT_CLS(TRC_SHADOW):
-            result_ok = get_shdwcls_evname(event_id, result_str);
+            result_len = get_shdwcls_evname(event_id, result_str);
             break;
         // Xen hardware-related traces
         case GET_EVENT_CLS(TRC_HW):
-            result_ok = get_hwcls_evname(event_id, result_str);
+            result_len = get_hwcls_evname(event_id, result_str);
             break;
     }
 
-    if (result_ok < 1) {
-        result_ok = sprintf(result_str, "unknown (0x%08x)", event_id);
-        if (result_ok < 1) {
+    if (result_len < 1) {
+        result_len = sprintf(result_str, "unknown (0x%08x)", event_id);
+        if (result_len < 1) {
             free(result_str);
             return NULL;
         }
     }
 
     #ifdef DEBUG
-    if (result_ok > MAX_EVNAME_LENGTH)
-        DBG_PRINTF("result_ok(%d) is greater than the maximum length!\n", result_ok);
+    if (result_len > MAX_EVNAME_LENGTH)
+        DBG_PRINTF("result_len(%d) is greater than the maximum length!\n", result_len);
     #endif
 
     return result_str;
@@ -190,49 +190,49 @@ static char *get_info(struct kshark_data_stream *stream,
 
     xt_record e_record = event->rec;
     char *result_str = malloc(sizeof(*result_str) * MAX_EVINFO_LENGTH);
-    int result_ok = 0;
+    int result_len = 0;
 
     switch ( GET_EVENT_CLS(e_record.id) ) {
         // General trace
         case GET_EVENT_CLS(TRC_GEN):
-            result_ok = get_basecls_evinfo(e_record.id, e_record.extra, result_str);
+            result_len = get_basecls_evinfo(e_record.id, e_record.extra, result_str);
             break;
         // Xen Scheduler trace
         case GET_EVENT_CLS(TRC_SCHED):
-            result_ok = get_schedcls_evinfo(e_record.id, e_record.extra, result_str);
+            result_len = get_schedcls_evinfo(e_record.id, e_record.extra, result_str);
             break;
         // Xen DOM0 operation trace
         case GET_EVENT_CLS(TRC_DOM0OP):
-            result_ok = get_dom0cls_evinfo(e_record.id, e_record.extra, result_str);
+            result_len = get_dom0cls_evinfo(e_record.id, e_record.extra, result_str);
             break;
         // Xen HVM trace
         case GET_EVENT_CLS(TRC_HVM):
-            result_ok = get_hvmcls_evinfo(e_record.id, e_record.extra, result_str);
+            result_len = get_hvmcls_evinfo(e_record.id, e_record.extra, result_str);
             break;
         // Xen memory trace
         case GET_EVENT_CLS(TRC_MEM):
-            result_ok = get_memcls_evinfo(e_record.id, e_record.extra, result_str);
+            result_len = get_memcls_evinfo(e_record.id, e_record.extra, result_str);
             break;
         // Xen PV traces
         case GET_EVENT_CLS(TRC_PV):
-            result_ok = get_pvcls_evinfo(e_record.id, e_record.extra, result_str);
+            result_len = get_pvcls_evinfo(e_record.id, e_record.extra, result_str);
             break;
         // Xen shadow tracing
         case GET_EVENT_CLS(TRC_SHADOW):
-            result_ok = get_shdwcls_evinfo(e_record.id, e_record.extra, result_str);
+            result_len = get_shdwcls_evinfo(e_record.id, e_record.extra, result_str);
             break;
         // Xen hardware-related traces
         case GET_EVENT_CLS(TRC_HW):
-            result_ok = get_hwcls_evinfo(e_record.id, e_record.extra, result_str);
+            result_len = get_hwcls_evinfo(e_record.id, e_record.extra, result_str);
             break;
     }
 
     #ifdef DEBUG
-    if (result_ok > MAX_EVINFO_LENGTH)
-        DBG_PRINTF("result_ok(%d) is greater than the maximum length!\n", result_ok);
+    if (result_len > MAX_EVINFO_LENGTH)
+        DBG_PRINTF("result_len(%d) is greater than the maximum length!\n", result_len);
     #endif
 
-    if (result_ok < 1) {
+    if (result_len < 1) {
         free(result_str);
         return NULL;
     }
@@ -252,14 +252,14 @@ static char *dump_entry(struct kshark_data_stream *stream,
         *ev_info  = get_info(stream, entry),
         *result_str;
 
-    int result_ok = asprintf(&result_str, "%.6f - %s - %s [ %s ]", 
+    int result_len = asprintf(&result_str, "%.6f - %s - %s [ %s ]", 
                             ev_ts, ev_task, ev_name, ev_info);
 
     free(ev_task);
     free(ev_name);
     free(ev_info);
 
-    return (result_ok > 0) ? result_str : NULL;
+    return (result_len > 0) ? result_str : NULL;
 }
 
 /**
