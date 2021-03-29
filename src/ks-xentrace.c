@@ -150,8 +150,10 @@ static char *get_event_name(struct kshark_data_stream *stream,
 
     if (result_ok < 1) {
         result_ok = sprintf(result_str, "unknown (0x%08x)", event_id);
-        if (result_ok < 1)
+        if (result_ok < 1) {
+            free(result_str);
             return NULL;
+        }
     }
 
     #ifdef DEBUG
@@ -216,7 +218,12 @@ static char *get_info(struct kshark_data_stream *stream,
         DBG_PRINTF("result_ok(%d) is greater than the maximum length!\n", result_ok);
     #endif
 
-    return (result_ok > 0) ? result_str : NULL;
+    if (result_ok < 1) {
+        free(result_str);
+        return NULL;
+    }
+
+    return result_str;
 }
 
 /**
