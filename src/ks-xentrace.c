@@ -124,7 +124,7 @@ static char *get_event_name(struct kshark_data_stream *stream,
         return NULL;
 
     uint32_t event_id = (event->rec).id;
-    char *result_str = malloc(STR_EVNAME_SIZE);
+    char *result_str = malloc(STR_EVNAME_MAXLEN);
     int result_len = 0;
 
     switch ( GET_EVENT_CLS(event_id) ) {
@@ -163,7 +163,7 @@ static char *get_event_name(struct kshark_data_stream *stream,
     }
 
     if (result_len < 1) {
-        result_len = snprintf(result_str, STR_EVNAME_SIZE, "unknown (0x%08x)", event_id);
+        result_len = EVNAME(result_str, "unknown (0x%08x)", event_id);
         if (result_len < 1) {
             free(result_str);
             return NULL;
@@ -189,7 +189,7 @@ static char *get_info(struct kshark_data_stream *stream,
         return NULL;
 
     xt_record e_record = event->rec;
-    char *result_str = malloc(STR_EVINFO_SIZE);
+    char *result_str = malloc(STR_EVINFO_MAXLEN);
     int result_len = 0;
 
     switch ( GET_EVENT_CLS(e_record.id) ) {
