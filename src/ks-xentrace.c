@@ -39,8 +39,8 @@
 #include "events/events.h"
 
 #ifdef DEBUG
-#define DBG_PRINTF(_format, ...) (fprintf(stdout, "[XenTrace DEBUG] %s: ", __func__), \
-                                    fprintf(stdout, _format, __VA_ARGS__));
+#define DBG_PRINTF(_format, ...) fprintf(stdout, \
+                    "[XenTrace DEBUG] "__func__": "_format, __VA_ARGS__);
 #endif
 
 #define ENV_XEN_CPUHZ "XEN_CPUHZ"
