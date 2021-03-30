@@ -124,7 +124,7 @@ static char *get_event_name(struct kshark_data_stream *stream,
         return NULL;
 
     uint32_t event_id = (event->rec).id;
-    char *result_str = malloc(sizeof(*result_str) * MAX_EVNAME_LENGTH);
+    char *result_str = malloc(STR_EVNAME_SIZE);
     int result_len = 0;
 
     switch ( GET_EVENT_CLS(event_id) ) {
@@ -163,7 +163,7 @@ static char *get_event_name(struct kshark_data_stream *stream,
     }
 
     if (result_len < 1) {
-        result_len = sprintf(result_str, "unknown (0x%08x)", event_id);
+        result_len = snprintf(result_str, STR_EVNAME_SIZE, "unknown (0x%08x)", event_id);
         if (result_len < 1) {
             free(result_str);
             return NULL;
@@ -171,7 +171,7 @@ static char *get_event_name(struct kshark_data_stream *stream,
     }
 
     #ifdef DEBUG
-    if (result_len > MAX_EVNAME_LENGTH)
+    if (result_len > STR_EVNAME_MAXLEN)
         DBG_PRINTF("result_len(%d) is greater than the maximum length!\n", result_len);
     #endif
 
@@ -189,7 +189,7 @@ static char *get_info(struct kshark_data_stream *stream,
         return NULL;
 
     xt_record e_record = event->rec;
-    char *result_str = malloc(sizeof(*result_str) * MAX_EVINFO_LENGTH);
+    char *result_str = malloc(STR_EVINFO_SIZE);
     int result_len = 0;
 
     switch ( GET_EVENT_CLS(e_record.id) ) {
@@ -228,7 +228,7 @@ static char *get_info(struct kshark_data_stream *stream,
     }
 
     #ifdef DEBUG
-    if (result_len > MAX_EVINFO_LENGTH)
+    if (result_len > STR_EVINFO_MAXLEN)
         DBG_PRINTF("result_len(%d) is greater than the maximum length!\n", result_len);
     #endif
 

@@ -35,13 +35,13 @@ int get_basecls_evname(const uint32_t event_id, char *result_str)
     int event_sub = event_id & 0x00000fff;
     switch (event_sub) {
         case 0x001:
-            return sprintf(result_str, "lost_records");
+            return EVNAME(result_str, "lost_records");
         case 0x002:
-            return sprintf(result_str, "wrap_buffer");
+            return EVNAME(result_str, "wrap_buffer");
         case (TRC_GEN | 0x004):
-            return sprintf(result_str, "trace_irq");
+            return EVNAME(result_str, "trace_irq");
         //case TRC_LOST_RECORDS_END:
-        //    return asprintf(&event_name, "lost_records_end");
+        //    return asnprintf(result_str, STR_EVNAME_SIZE, "lost_records_end");
         default:
             return 0;
     }
@@ -58,12 +58,12 @@ int get_basecls_evinfo(const uint32_t event_id,
     switch (event_sub) {
         case 0x001:
         case 0x002:
-            return sprintf(result_str, "0x%08x", event_extra[0]);
+            return EVINFO(result_str, "0x%08x", event_extra[0]);
         case (TRC_GEN | 0x004):
-            return sprintf(result_str, "vector = %d, count = %d, tot_cycles = 0x%08x, max_cycles = 0x%08x",
+            return EVINFO(result_str, "vector = %d, count = %d, tot_cycles = 0x%08x, max_cycles = 0x%08x",
                                 event_extra[0], event_extra[1], event_extra[2], event_extra[3]);
         //case TRC_LOST_RECORDS_END:
-        //    return asprintf(&event_name, "??");
+        //    return asnprintf(result_str, STR_EVINFO_SIZE, "??");
         default:
             return 0;
     }

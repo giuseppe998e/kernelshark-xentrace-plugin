@@ -27,8 +27,15 @@
 #define GET_EVENT_CLS(e)    ((e) >> TRC_CLS_SHIFT)
 #define GET_EVENT_SUBCLS(e) ((e) >> TRC_SUBCLS_SHIFT)
 
-#define MAX_EVNAME_LENGTH 32
-#define MAX_EVINFO_LENGTH 128
+#define STR_EVNAME_MAXLEN 32
+#define STR_EVNAME_SIZE (sizeof(char) * STR_EVNAME_MAXLEN)
+#define EVNAME(_str, _format, ...) snprintf(_str, STR_EVNAME_SIZE, \
+                                                _format, ##__VA_ARGS__)
+
+#define STR_EVINFO_MAXLEN 128
+#define STR_EVINFO_SIZE (sizeof(char) * STR_EVINFO_MAXLEN)
+#define EVINFO(_str, _format, ...) snprintf(_str, STR_EVINFO_SIZE, \
+                                                _format, ##__VA_ARGS__)
 
 // General trace | basecls.c
 int get_basecls_evname(const uint32_t, char*);

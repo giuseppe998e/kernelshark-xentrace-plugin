@@ -35,11 +35,11 @@ int get_memcls_evname(const uint32_t event_id, char *result_str)
     int event_sub = event_id & 0x00000fff;
     switch (event_sub) {
         case 0x001:
-            return sprintf(result_str, "page_grant_map");
+            return EVNAME(result_str, "page_grant_map");
         case 0x002:
-            return sprintf(result_str, "page_grant_unmap");
+            return EVNAME(result_str, "page_grant_unmap");
         case 0x003:
-            return sprintf(result_str, "page_grant_transfer");
+            return EVNAME(result_str, "page_grant_transfer");
         default:
             return 0;
     }
@@ -52,5 +52,5 @@ int get_memcls_evname(const uint32_t event_id, char *result_str)
 int get_memcls_evinfo(const uint32_t event_id,
                     const uint32_t *event_extra, char *result_str)
 {
-    return sprintf(result_str, "domid = %d", event_extra[0]);
+    return EVINFO(result_str, "domid = %d", event_extra[0]);
 }

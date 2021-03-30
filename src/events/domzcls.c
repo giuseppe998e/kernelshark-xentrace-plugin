@@ -35,9 +35,9 @@ int get_dom0cls_evname(const uint32_t event_id, char *result_str)
     int event_sub = event_id & 0x00000fff;
     switch (event_sub) {
         case 0x001:
-            return sprintf(result_str, "domain_create");
+            return EVNAME(result_str, "domain_create");
         case 0x002:
-            return sprintf(result_str, "domain_destroy");
+            return EVNAME(result_str, "domain_destroy");
         default:
             return 0;
     }
@@ -50,5 +50,5 @@ int get_dom0cls_evname(const uint32_t event_id, char *result_str)
 int get_dom0cls_evinfo(const uint32_t event_id, 
                     const uint32_t *event_extra, char *result_str)
 {
-    return sprintf(result_str, "dom = 0x%08x", event_extra[0]);
+    return EVINFO(result_str, "dom = 0x%08x", event_extra[0]);
 }
