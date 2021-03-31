@@ -321,7 +321,7 @@ static uint64_t parse_cpu_hz(char *arg) {
     float hz_base = strtof(arg, &next_ptr);
 
     if (next_ptr == arg) {
-        fprintf(stderr, "[XenTrace WARN] Invalid cpu_hz %s. The default value will be used.\n", arg);
+        fprintf(stderr, "[XenTrace WARN] Invalid cpu_hz \"%s\". The default value will be used.\n", arg);
         return DEFAULT_CPU_HZ;
     }
 
@@ -335,7 +335,7 @@ static uint64_t parse_cpu_hz(char *arg) {
     case 'K':
         return hz_base * KHZ;
     default:
-        fprintf(stderr, "[XenTrace WARN] Unknown suffix %c. The default value will be used.\n", *next_ptr);
+        fprintf(stderr, "[XenTrace WARN] Unknown suffix '%c'. The default value will be used.\n", *next_ptr);
         return DEFAULT_CPU_HZ;
     }
 }
