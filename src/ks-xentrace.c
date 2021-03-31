@@ -346,13 +346,13 @@ static uint64_t parse_cpu_hz(char *arg) {
 static void read_env_vars()
 {
     // Read trace CPU Hz (or set default val)
-    char* env_base_hz = secure_getenv(ENV_XEN_CPUHZ);
+    char *env_base_hz = secure_getenv(ENV_XEN_CPUHZ);
     I.cpu_hz = env_base_hz ? parse_cpu_hz(env_base_hz) : DEFAULT_CPU_HZ;
     I.cpu_qhz = QHZ_FROM_HZ(I.cpu_hz);
 
     // Save the tsc of the first event to
     // perform the calc of the relative ts.
-    char* env_abs_ts = secure_getenv(ENV_XEN_ABSTS);
+    char *env_abs_ts = secure_getenv(ENV_XEN_ABSTS);
     char abs_ts = env_abs_ts && ((*env_abs_ts == '1') ||
                                     (*env_abs_ts == 'y') ||
                                         (*env_abs_ts == 'Y'));
