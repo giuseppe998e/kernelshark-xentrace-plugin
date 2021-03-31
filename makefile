@@ -1,6 +1,6 @@
 CC = gcc
 CFLAGS = -fPIC -s
-CINCLD = -I . -I $(LIBDIR)/kernel-shark-v2.beta -I $(LIBDIR)/xen -I $(LIBDIR)/xentrace-parser/out
+CINCLD = -I. -I$(LIBDIR)/kernel-shark-v2.beta -I/usr/include/xen -I$(LIBDIR)/xen -I$(LIBDIR)/xentrace-parser/out
 
 CP = cp
 RM = rm -f

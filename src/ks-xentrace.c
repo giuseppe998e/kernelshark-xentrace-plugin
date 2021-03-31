@@ -31,7 +31,7 @@
 #include "libkshark.h"
 #include "libkshark-plugin.h"
 // Xen Project
-#include "trace.h"
+#include <trace.h>
 // XenTrace-Parser
 #include "xentrace-event.h"
 #include "xentrace-parser.h"
