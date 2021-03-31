@@ -6,7 +6,7 @@ Development is supervised by Dario Faggioli ([@dfaggioli](https://github.com/dfa
 ## Building
 ### Testing/Development
 ```shell
-$ git clone --recurse-submodules git@github.com:giuseppe998e/kernelshark-xentrace-plugin.git
+$ git clone --recurse-submodules https://github.com/giuseppe998e/kernelshark-xentrace-plugin.git
 $ cd kernelshark-xentrace-plugin/
 $ make CFLAGS="-fPIC -Wall -g -DDEBUG"
 ```
@@ -14,7 +14,7 @@ $ make CFLAGS="-fPIC -Wall -g -DDEBUG"
 
 ### Optimized for usage
 ```shell
-$ git clone --recurse-submodules git@github.com:giuseppe998e/kernelshark-xentrace-plugin.git
+$ git clone --recurse-submodules https://github.com/giuseppe998e/kernelshark-xentrace-plugin.git
 $ cd kernelshark-xentrace-plugin/
 $ make
 ```
