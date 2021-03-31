@@ -4,6 +4,10 @@ This is a project for the final three-year degree exam at the University of Turi
 Development is supervised by Dario Faggioli ([@dfaggioli](https://github.com/dfaggioli)) and Enrico Bini ([@ebni](https://github.com/ebni)).  
 
 ## Building
+### Dependencies
+* `xen` (opt.)
+* [`json-c`](https://github.com/json-c/json-c)
+
 ### Testing/Development
 ```shell
 $ git clone --recurse-submodules https://github.com/giuseppe998e/kernelshark-xentrace-plugin.git
