@@ -326,17 +326,17 @@ static uint64_t parse_cpu_hz(char *arg) {
     }
 
     switch (*next_ptr) {
-    case '\0':
-        return (uint64_t) hz_base;
-    case 'G':
-        return hz_base * GHZ;
-    case 'M':
-        return hz_base * MHZ;
-    case 'K':
-        return hz_base * KHZ;
-    default:
-        fprintf(stderr, "[XenTrace WARN] Unknown suffix '%c'. The default value will be used.\n", *next_ptr);
-        return DEFAULT_CPU_HZ;
+        case '\0':
+            return (uint64_t) hz_base;
+        case 'G':
+            return hz_base * GHZ;
+        case 'M':
+            return hz_base * MHZ;
+        case 'K':
+            return hz_base * KHZ;
+        default:
+            fprintf(stderr, "[XenTrace WARN] Unknown suffix '%c'. The default value will be used.\n", *next_ptr);
+            return DEFAULT_CPU_HZ;
     }
 }
 
