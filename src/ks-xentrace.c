@@ -90,11 +90,21 @@ static char *get_task(struct kshark_data_stream *stream,
     if (!event)
         return NULL;
 
-    xt_header *hdr = &event->hdr;
+    xt_domain dom = event->dom;
     char *result_str;
-    int result_len = (hdr->dom == XEN_DOM_IDLE) ?
-                asprintf(&result_str, "idle/v%u", hdr->vcpu) :
-                    asprintf(&result_str, "d%u/v%u", hdr->dom, hdr->vcpu);
+    int result_len = 0;
+
+    switch (dom.id) {
+        case XEN_DOM_IDLE:
+            result_len = asprintf(&result_str, "idle/v%u", dom.vcpu);
+            break;
+        case XEN_DOM_DFLT:
+            result_len = asprintf(&result_str, "default/v%u", dom.vcpu);
+            break;
+        default:
+            result_len = asprintf(&result_str, "d%u/v%u", dom.id, dom.vcpu);
+            break;
+    }
 
     return (result_len > 0) ? result_str : NULL;
 }
@@ -287,7 +297,6 @@ static ssize_t load_entries(struct kshark_data_stream *stream,
     xt_event *event;
     while ( (event = xtp_next_event(I.parser)) ) {
         // Utility ptrs
-        xt_header *hdr = &event->hdr;
         xt_record *rec = &event->rec;
 
         // Initialize KS row
@@ -299,11 +308,12 @@ static ssize_t load_entries(struct kshark_data_stream *stream,
         rows[pos]->offset = pos;
 
         rows[pos]->event_id = rec->id % 16; // FIXME  int16_t < uint32_t:28  ¯\_(ツ)_/¯
-        rows[pos]->cpu = hdr->cpu;
+        rows[pos]->cpu = event->cpu;
         rows[pos]->ts  = tsc_to_ns(rec->tsc);
 
-        if (hdr->dom != XEN_DOM_IDLE) {
-            int task_id = ((hdr->dom << 16) | hdr->vcpu) + 1;
+        if ((event->dom).id != XEN_DOM_IDLE) {
+            int task_id = ((event->dom).id == XEN_DOM_DFLT) ? 
+                                XEN_DOM_DFLT : (event->dom).u32 + 1;
             kshark_hash_id_add(stream->tasks, task_id);
             rows[pos]->pid = task_id;
         } // else 0
