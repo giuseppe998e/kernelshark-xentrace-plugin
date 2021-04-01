@@ -99,7 +99,7 @@ static char *get_task(struct kshark_data_stream *stream,
             result_len = asprintf(&result_str, "idle/v%u", dom.vcpu);
             break;
         case XEN_DOM_DFLT:
-            result_len = asprintf(&result_str, "default/v%u", dom.vcpu);
+            result_len = asprintf(&result_str, "default/v?");
             break;
         default:
             result_len = asprintf(&result_str, "d%u/v%u", dom.id, dom.vcpu);
