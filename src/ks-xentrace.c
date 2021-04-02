@@ -130,11 +130,11 @@ static char *get_event_name(struct kshark_data_stream *stream,
                                 const struct kshark_entry *entry)
 {
     xt_event *event = xtp_get_event(I.parser, entry->offset);
-    if (!event)
+    char *result_str = malloc(STR_EVNAME_MAXLEN);
+    if ( !(event && result_str) )
         return NULL;
 
     uint32_t event_id = (event->rec).id;
-    char *result_str = malloc(STR_EVNAME_MAXLEN);
     int result_len = 0;
 
     switch ( GET_EVENT_CLS(event_id) ) {
@@ -195,11 +195,11 @@ static char *get_info(struct kshark_data_stream *stream,
                             const struct kshark_entry *entry)
 {
     xt_event *event = xtp_get_event(I.parser, entry->offset);
-    if (!event)
+    char *result_str = malloc(STR_EVINFO_MAXLEN);
+    if ( !(event && result_str) )
         return NULL;
 
     xt_record e_record = event->rec;
-    char *result_str = malloc(STR_EVINFO_MAXLEN);
     int result_len = 0;
 
     switch ( GET_EVENT_CLS(e_record.id) ) {
