@@ -12,6 +12,7 @@
 ## Building
 ### Dependencies
 * `xen` (opt.)
+* `kernelshark-v2` (opt.)
 * [`json-c`](https://github.com/json-c/json-c)
 
 ### Testing/Development
