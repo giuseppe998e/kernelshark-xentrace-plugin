@@ -1,0 +1,3 @@
+[submodule "lib/xentrace-parser"]
+	path = lib/xentrace-parser
+	url = https://github.com/giuseppe998e/xentrace-parser.git
