@@ -39,8 +39,8 @@ $ kernelshark -p out/ks-xentrace.so trace.xen
 **N.B.** When environment variables are not set, the plugin uses predefined values: `2,4G` and `0` respectively.
 
 ## License
-This plugin is released under the `GNU Lesser General Public License v3 (or later)`.  
+This plugin is released under the `GNU Lesser General Public License v2.1 (or later)`.  
 This plugin uses code from various projects:
 * `libkshark.h` and `libkshark-plugin.h`, from [KernelShark-v2.beta](https://git.kernel.org/pub/scm/utils/trace-cmd/kernel-shark.git), released under the `LGPLv2.1`;
 * `trace.h`, from [Xen](https://xenbits.xen.org/gitweb/?p=xen.git;a=summary), released under the `MIT License`;
-* [XenTrace-Parser](https://github.com/giuseppe998e/xentrace-parser) released under the `LGPLv3`.
+* [XenTrace-Parser](https://github.com/giuseppe998e/xentrace-parser) released under the `LGPLv2.1`.
