@@ -174,6 +174,11 @@ static char *get_event_name(struct kshark_data_stream *stream,
             break;
     }
 
+    #ifdef DEBUG
+    if (result_len > STR_EVNAME_MAXLEN)
+        DBG_PRINTF("result_len(%d) is greater than the maximum length!\n", result_len);
+    #endif
+
     if (result_len < 1) {
         result_len = EVNAME(result_str, "unknown (0x%08x)", event_id);
         if (result_len < 1) {
@@ -181,11 +186,6 @@ static char *get_event_name(struct kshark_data_stream *stream,
             return NULL;
         }
     }
-
-    #ifdef DEBUG
-    if (result_len > STR_EVNAME_MAXLEN)
-        DBG_PRINTF("result_len(%d) is greater than the maximum length!\n", result_len);
-    #endif
 
     return result_str;
 }
