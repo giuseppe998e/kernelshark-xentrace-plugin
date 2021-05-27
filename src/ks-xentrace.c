@@ -45,6 +45,8 @@
                     "[XenTrace DEBUG] "__func__": "_format, __VA_ARGS__);
 #endif
 
+#define TASK_MAX_LEN 16
+
 #define ENV_XEN_CPUHZ "XEN_CPUHZ"
 #define ENV_XEN_ABSTS "XEN_ABSTS"
 
@@ -92,19 +94,22 @@ static char *get_task(struct kshark_data_stream *stream,
     if (!event)
         return NULL;
 
+    char *result_str = malloc(TASK_MAX_LEN);
+    if (!result_str)
+        return NULL;
+
     xt_domain dom = event->dom;
-    char *result_str;
     int result_len = 0;
 
     switch (dom.id) {
         case XEN_DOM_IDLE:
-            result_len = asprintf(&result_str, "idle/v%u", dom.vcpu);
+            result_len = snprintf(result_str, TASK_MAX_LEN, "idle/v%u", dom.vcpu);
             break;
         case XEN_DOM_DFLT:
-            result_len = asprintf(&result_str, "default/v?");
+            result_len = snprintf(result_str, TASK_MAX_LEN, "default/v?");
             break;
         default:
-            result_len = asprintf(&result_str, "d%u/v%u", dom.id, dom.vcpu);
+            result_len = snprintf(result_str, TASK_MAX_LEN, "d%u/v%u", dom.id, dom.vcpu);
             break;
     }
 
