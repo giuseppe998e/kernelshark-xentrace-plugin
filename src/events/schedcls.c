@@ -229,7 +229,9 @@ int get_schedcls_evname(const uint32_t event_id, char *result_str)
 static int sched_min_evinfo(const uint32_t event_sub, 
                         const uint32_t *event_extra, char *result_str)
 {
-    return EVINFO(result_str, "dom:vcpu = 0x%08x", event_extra[0]);
+    // Redundant information
+    // return EVINFO(result_str, "dom:vcpu = 0x%08x", event_extra[0]);
+    return 0;
 }
 
 static int sched_verbs_evinfo(const uint32_t event_sub, 
