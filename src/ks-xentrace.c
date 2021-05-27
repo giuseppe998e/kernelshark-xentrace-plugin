@@ -304,8 +304,11 @@ static ssize_t load_entries(struct kshark_data_stream *stream,
                                 struct kshark_entry ***data_rows)
 {
     int n_events = xtp_events_count(I.parser),
-             pos = 0;
+        pos = 0;
+    
     struct kshark_entry **rows = malloc(sizeof(struct kshark_entry*) * n_events);
+    if (!rows)
+        return -ENOMEM;
 
     xt_event *event;
     while ( (event = xtp_next_event(I.parser)) ) {
