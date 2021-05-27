@@ -147,7 +147,7 @@ static char *get_event_name(struct kshark_data_stream *stream,
     uint32_t event_id = (event->rec).id;
     int result_len = 0;
 
-    switch ( GET_EVENT_CLS(event_id) ) {
+    switch (GET_EVENT_CLS(event_id)) {
         // General trace
         case GET_EVENT_CLS(TRC_GEN):
             result_len = get_basecls_evname(event_id, result_str);
@@ -215,7 +215,7 @@ static char *get_info(struct kshark_data_stream *stream,
     xt_record e_record = event->rec;
     int result_len = 0;
 
-    switch ( GET_EVENT_CLS(e_record.id) ) {
+    switch (GET_EVENT_CLS(e_record.id)) {
         // General trace
         case GET_EVENT_CLS(TRC_GEN):
             result_len = get_basecls_evinfo(e_record.id, e_record.extra, result_str);
@@ -311,7 +311,7 @@ static ssize_t load_entries(struct kshark_data_stream *stream,
         return -ENOMEM;
 
     xt_event *event;
-    while ( (event = xtp_next_event(I.parser)) ) {
+    while ((event = xtp_next_event(I.parser))) {
         // Utility ptrs
         xt_record *rec = &event->rec;
 
@@ -447,7 +447,7 @@ int KSHARK_INPUT_INITIALIZER(struct kshark_data_stream *stream)
     // Initialize XenTrace Parser
     I.parser = xtp_init(stream->file);
     unsigned n_events = xtp_execute(I.parser);
-    if ( !(I.parser && n_events) ) {
+    if (!(I.parser && n_events)) {
         free(interface);
         return -ENOMEM;
     }
