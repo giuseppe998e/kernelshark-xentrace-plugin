@@ -205,8 +205,11 @@ static char *get_info(struct kshark_data_stream *stream,
                             const struct kshark_entry *entry)
 {
     xt_event *event = xtp_get_event(I.parser, entry->offset);
+    if (!event)
+        return NULL;
+
     char *result_str = malloc(STR_EVINFO_MAXLEN);
-    if ( !(event && result_str) )
+    if(!result_str)
         return NULL;
 
     xt_record e_record = event->rec;
