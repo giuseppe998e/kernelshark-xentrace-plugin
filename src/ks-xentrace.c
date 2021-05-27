@@ -45,6 +45,8 @@
                     "[XenTrace DEBUG] "__func__": "_format, __VA_ARGS__);
 #endif
 
+#define TASK_MAX_LEN 16
+
 #define ENV_XEN_CPUHZ "XEN_CPUHZ"
 #define ENV_XEN_ABSTS "XEN_ABSTS"
 
@@ -92,19 +94,22 @@ static char *get_task(struct kshark_data_stream *stream,
     if (!event)
         return NULL;
 
+    char *result_str = malloc(TASK_MAX_LEN);
+    if (!result_str)
+        return NULL;
+
     xt_domain dom = event->dom;
-    char *result_str;
     int result_len = 0;
 
     switch (dom.id) {
         case XEN_DOM_IDLE:
-            result_len = asprintf(&result_str, "idle/v%u", dom.vcpu);
+            result_len = snprintf(result_str, TASK_MAX_LEN, "idle/v%u", dom.vcpu);
             break;
         case XEN_DOM_DFLT:
-            result_len = asprintf(&result_str, "default/v?");
+            result_len = snprintf(result_str, TASK_MAX_LEN, "default/v?");
             break;
         default:
-            result_len = asprintf(&result_str, "d%u/v%u", dom.id, dom.vcpu);
+            result_len = snprintf(result_str, TASK_MAX_LEN, "d%u/v%u", dom.id, dom.vcpu);
             break;
     }
 
@@ -132,14 +137,17 @@ static char *get_event_name(struct kshark_data_stream *stream,
                                 const struct kshark_entry *entry)
 {
     xt_event *event = xtp_get_event(I.parser, entry->offset);
+    if (!event)
+        return NULL;
+
     char *result_str = malloc(STR_EVNAME_MAXLEN);
-    if ( !(event && result_str) )
+    if (!result_str)
         return NULL;
 
     uint32_t event_id = (event->rec).id;
     int result_len = 0;
 
-    switch ( GET_EVENT_CLS(event_id) ) {
+    switch (GET_EVENT_CLS(event_id)) {
         // General trace
         case GET_EVENT_CLS(TRC_GEN):
             result_len = get_basecls_evname(event_id, result_str);
@@ -174,6 +182,11 @@ static char *get_event_name(struct kshark_data_stream *stream,
             break;
     }
 
+    #ifdef DEBUG
+    if (result_len > STR_EVNAME_MAXLEN)
+        DBG_PRINTF("result_len(%d) is greater than the maximum length!\n", result_len);
+    #endif
+
     if (result_len < 1) {
         result_len = EVNAME(result_str, "unknown (0x%08x)", event_id);
         if (result_len < 1) {
@@ -181,11 +194,6 @@ static char *get_event_name(struct kshark_data_stream *stream,
             return NULL;
         }
     }
-
-    #ifdef DEBUG
-    if (result_len > STR_EVNAME_MAXLEN)
-        DBG_PRINTF("result_len(%d) is greater than the maximum length!\n", result_len);
-    #endif
 
     return result_str;
 }
@@ -197,14 +205,17 @@ static char *get_info(struct kshark_data_stream *stream,
                             const struct kshark_entry *entry)
 {
     xt_event *event = xtp_get_event(I.parser, entry->offset);
+    if (!event)
+        return NULL;
+
     char *result_str = malloc(STR_EVINFO_MAXLEN);
-    if ( !(event && result_str) )
+    if(!result_str)
         return NULL;
 
     xt_record e_record = event->rec;
     int result_len = 0;
 
-    switch ( GET_EVENT_CLS(e_record.id) ) {
+    switch (GET_EVENT_CLS(e_record.id)) {
         // General trace
         case GET_EVENT_CLS(TRC_GEN):
             result_len = get_basecls_evinfo(e_record.id, e_record.extra, result_str);
@@ -293,16 +304,23 @@ static ssize_t load_entries(struct kshark_data_stream *stream,
                                 struct kshark_entry ***data_rows)
 {
     int n_events = xtp_events_count(I.parser),
-             pos = 0;
+        pos = 0;
+    
     struct kshark_entry **rows = malloc(sizeof(struct kshark_entry*) * n_events);
+    if (!rows)
+        return -ENOMEM;
 
     xt_event *event;
-    while ( (event = xtp_next_event(I.parser)) ) {
+    while ((event = xtp_next_event(I.parser))) {
         // Utility ptrs
         xt_record *rec = &event->rec;
 
         // Initialize KS row
         rows[pos] = calloc(1, sizeof(struct kshark_entry));
+        if (!rows[pos]) { // Jump the entry if calloc fails
+            ++pos;
+            continue;
+        }
 
         // Populate members of the KS row
         rows[pos]->stream_id = stream->stream_id;
@@ -419,22 +437,22 @@ const char *KSHARK_INPUT_FORMAT()
 int KSHARK_INPUT_INITIALIZER(struct kshark_data_stream *stream)
 {
     struct kshark_generic_stream_interface *interface;
-
     stream->interface = interface = calloc(1, sizeof(struct kshark_generic_stream_interface));
     if (!interface)
         return -ENOMEM;
 
+    // Set plugin type
     interface->type = KS_GENERIC_DATA_INTERFACE;
 
     // Initialize XenTrace Parser
     I.parser = xtp_init(stream->file);
     unsigned n_events = xtp_execute(I.parser);
-    if ( !(I.parser && n_events) ) {
+    if (!(I.parser && n_events)) {
         free(interface);
         return -ENOMEM;
     }
 
-    // ...
+    // Load infos about the trace file
     stream->n_events = n_events;
     stream->n_cpus   = xtp_cpus_count(I.parser);
     stream->idle_pid = 0;
