@@ -317,6 +317,10 @@ static ssize_t load_entries(struct kshark_data_stream *stream,
 
         // Initialize KS row
         rows[pos] = calloc(1, sizeof(struct kshark_entry));
+        if (!rows[pos]) { // Jump the entry if calloc fails
+            ++pos;
+            continue;
+        }
 
         // Populate members of the KS row
         rows[pos]->stream_id = stream->stream_id;
