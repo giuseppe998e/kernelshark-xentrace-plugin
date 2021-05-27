@@ -433,11 +433,11 @@ const char *KSHARK_INPUT_FORMAT()
 int KSHARK_INPUT_INITIALIZER(struct kshark_data_stream *stream)
 {
     struct kshark_generic_stream_interface *interface;
-
     stream->interface = interface = calloc(1, sizeof(struct kshark_generic_stream_interface));
     if (!interface)
         return -ENOMEM;
 
+    // Set plugin type
     interface->type = KS_GENERIC_DATA_INTERFACE;
 
     // Initialize XenTrace Parser
@@ -448,7 +448,7 @@ int KSHARK_INPUT_INITIALIZER(struct kshark_data_stream *stream)
         return -ENOMEM;
     }
 
-    // ...
+    // Load infos about the trace file
     stream->n_events = n_events;
     stream->n_cpus   = xtp_cpus_count(I.parser);
     stream->idle_pid = 0;
