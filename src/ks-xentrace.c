@@ -137,8 +137,11 @@ static char *get_event_name(struct kshark_data_stream *stream,
                                 const struct kshark_entry *entry)
 {
     xt_event *event = xtp_get_event(I.parser, entry->offset);
+    if (!event)
+        return NULL;
+
     char *result_str = malloc(STR_EVNAME_MAXLEN);
-    if ( !(event && result_str) )
+    if (!result_str)
         return NULL;
 
     uint32_t event_id = (event->rec).id;
