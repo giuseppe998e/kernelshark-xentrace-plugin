@@ -6,7 +6,11 @@
     Development is supervised by Dario Faggioli (<a href="https://github.com/dfaggioli">@dfaggioli</a>) and Enrico Bini (<a href="https://github.com/ebni">@ebni</a>).
 </p>
 <br>
-<br>
+<p>
+    <i>
+        A "freelance" implementation of this project using the <b>Rust</b> programming language can be found at this repository: <a href="https://github.com/giuseppe998e/kernelshark-xentrace-plugin-rs">giuseppe998e/kernelshark-xentrace-plugin-rs</a>.
+    </i>
+</p>
 <br>
 
 ## Building
