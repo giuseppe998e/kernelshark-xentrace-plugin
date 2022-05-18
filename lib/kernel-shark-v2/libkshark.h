@@ -1,6 +1,6 @@
-/*************************************************************************************************
- * FROM: https://github.com/yordan-karadzhov/kernel-shark-v2.beta/blob/kernelshark/src/libkshark.h
- * COMMIT: ab7507290cbb361dee8854f6f5d37431b6d91ad9
+/*
+ * FROM: https://github.com/yordan-karadzhov/kernel-shark/blob/kernelshark/src/libkshark.h
+ * COMMIT: 46801e434a6a10e33f9d0cd411419efbbd5c9054
  */
 
 /* SPDX-License-Identifier: LGPL-2.1 */
@@ -286,10 +286,13 @@ struct kshark_generic_stream_interface {
 /** Structure representing a stream of trace data. */
 struct kshark_data_stream {
 	/** Data stream identifier. */
-	uint16_t		stream_id;
+	int16_t			stream_id;
 
 	/** The number of CPUs presented in this data stream. */
 	int			n_cpus;
+
+	/** Hash table of Idle CPUs. */
+	struct kshark_hash_id	*idle_cpus;
 
 	/**
 	 * The number of distinct event types presented in this data stream.
@@ -328,6 +331,11 @@ struct kshark_data_stream {
 
 	/** Hash of CPUs to not display. */
 	struct kshark_hash_id	*hide_cpu_filter;
+
+	/**
+	 * Flag showing if some entries are filtered out (marked as invisible).
+	 */
+	bool			filter_is_applied;
 
 	/** The type of the data. */
 	char			data_format[KS_DATA_FORMAT_SIZE];
