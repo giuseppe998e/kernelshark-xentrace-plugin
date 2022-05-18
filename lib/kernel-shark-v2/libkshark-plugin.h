@@ -1,6 +1,6 @@
-/********************************************************************************************************
- * FROM: https://github.com/yordan-karadzhov/kernel-shark-v2.beta/blob/kernelshark/src/libkshark-plugin.h
- * COMMIT: b39499d49f70c89c6c0cb8cff25dd9e4b69908b7
+/*
+ * FROM: https://github.com/yordan-karadzhov/kernel-shark/blob/kernelshark/src/libkshark-plugin.h
+ * COMMIT: 46801e434a6a10e33f9d0cd411419efbbd5c9054
  */
 
 /* SPDX-License-Identifier: LGPL-2.1 */
@@ -28,6 +28,8 @@ extern "C" {
 
 /* Quiet warnings over documenting simple structures */
 //! @cond Doxygen_Suppress
+
+#define __hidden __attribute__((visibility ("hidden")))
 
 #define _MAKE_STR(x)	#x
 
@@ -369,11 +371,17 @@ int kshark_handle_all_dpis(struct kshark_data_stream *stream,
 	__ok;								\
 })									\
 
-/** General purpose macro defining methods for adding plugin context. */
-#define KS_DEFINE_PLUGIN_CONTEXT(type)					\
+/** Identifier used to free the plugin context. */
+#define KS_PLUGIN_CONTEXT_FREE	-1
+
+/**
+ * General purpose macro defining methods for adding plugin context.
+ * Do not use this macro in header files.
+ */
+#define KS_DEFINE_PLUGIN_CONTEXT(type, type_free)			\
 static type **__context_handler;					\
 static ssize_t __n_streams = -1;					\
-static inline type *__init(int sd)					\
+__hidden type *__init(int sd)						\
 {									\
 	type *obj;							\
 	if (__n_streams < 0 && sd < KS_DEFAULT_NUM_STREAMS) {		\
@@ -393,22 +401,35 @@ static inline type *__init(int sd)					\
 	__context_handler[sd] = obj;					\
 	return obj;							\
 }									\
-static inline void __close(int sd)					\
-{									\
-	if (sd < 0) {							\
-		free(__context_handler);				\
-		__n_streams = -1;					\
-		return;							\
-	}								\
-	free(__context_handler[sd]);					\
-	__context_handler[sd] = NULL;					\
-}									\
-static inline type *__get_context(int sd)				\
+__hidden type *__get_context(int sd)					\
 {									\
 	if (sd < 0 || sd >= __n_streams)				\
 		return NULL;						\
 	return __context_handler[sd];					\
 }									\
+__hidden void __close(int sd)						\
+{									\
+	type *obj;							\
+	if (sd == KS_PLUGIN_CONTEXT_FREE) {				\
+		free(__context_handler);				\
+		__n_streams = -1;					\
+		return;							\
+	}								\
+	obj = __get_context(sd);					\
+	if (obj) {							\
+		type_free(__context_handler[sd]);			\
+		__context_handler[sd] = NULL;				\
+	}								\
+}									\
+
+/**
+ * General purpose macro declaring the methods for adding plugin context.
+ * To be used in header files.
+ */
+#define KS_DECLARE_PLUGIN_CONTEXT_METHODS(type)		\
+type *__init(int sd);					\
+void __close(int sd);					\
+type *__get_context(int sd);				\
 
 #ifdef __cplusplus
 }
